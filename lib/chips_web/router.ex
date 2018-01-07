@@ -1,26 +1,18 @@
 defmodule ChipsWeb.Router do
   use ChipsWeb, :router
 
-  pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_flash
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
-  end
-
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/", ChipsWeb do
-    pipe_through :browser # Use the default browser stack
+  scope "/api" do
+    pipe_through :api
 
-    get "/", PageController, :index
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: ChipsWeb.Schema
+
+    forward "/", Absinthe.Plug,
+      schema: ChipsWeb.Schema
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", ChipsWeb do
-  #   pipe_through :api
-  # end
 end
