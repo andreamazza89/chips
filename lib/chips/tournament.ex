@@ -9,6 +9,8 @@ defmodule Chips.Tournament do
     field :name, :string
     field :starts, :naive_datetime
 
+    many_to_many :users, Chips.User, join_through: "users_tournaments"
+
     timestamps()
   end
 

@@ -12,6 +12,10 @@ defmodule ChipsWeb.Schema do
        resolve &Resolvers.Data.list_tournaments/3
      end
 
+     field :users, list_of(:user) do
+       resolve &Resolvers.Data.list_users/3
+     end
+
   end
 
 
@@ -23,6 +27,20 @@ defmodule ChipsWeb.Schema do
 			arg :starts, :naive_datetime
 
 			resolve &Resolvers.Data.create_tournament/3
+		end
+
+		field :create_user, type: :user do
+			arg :email, non_null(:string)
+			arg :name, non_null(:string)
+
+			resolve &Resolvers.Data.create_user/3
+		end
+
+		field :associate_user_to_tournament, type: :user do
+			arg :user_id, non_null(:string)
+			arg :tournament_id, non_null(:string)
+
+			resolve &Resolvers.Data.associate_user_to_tournament/3
 		end
 
 	end
