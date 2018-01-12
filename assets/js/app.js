@@ -13,9 +13,9 @@
 // to also remove its path from "config.paths.watched".
 import "phoenix_html"
 
-// Import local files
-//
-// Local files can be imported directly using relative
-// paths "./socket" or full ones "web/static/js/socket".
+const elmDiv = document.querySelector('#main-node');
+import Elm from './main';
 
-// import socket from "./socket"
+if (elmDiv) {
+    Elm.Main.embed(elmDiv);
+}
