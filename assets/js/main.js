@@ -9033,6 +9033,54 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+var _user$project$Main$viewTournament = function (tournament) {
+	return A2(
+		_elm_lang$html$Html$li,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					tournament.name,
+					A2(_elm_lang$core$Basics_ops['++'], ' id: ', tournament.id))),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$viewTournaments = function (tournaments) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$h3,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('tournaments available'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$ul,
+					{ctor: '[]'},
+					A2(_elm_lang$core$List$map, _user$project$Main$viewTournament, tournaments)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$allTournaments = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Main$viewTournaments(model.tournaments),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$userDecoder = A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string);
 var _user$project$Main$usersDecoder = A2(
 	_elm_lang$core$Json_Decode$field,
@@ -9052,10 +9100,50 @@ var _user$project$Main$requestBody = _elm_lang$http$Http$jsonBody(
 			},
 			_1: {ctor: '[]'}
 		}));
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {userName: a, email: b, stuff: c};
+var _user$project$Main$tournamentsRequestBody = _elm_lang$http$Http$jsonBody(
+	_elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'query',
+				_1: _elm_lang$core$Json_Encode$string('query { tournaments { name, id } }')
+			},
+			_1: {ctor: '[]'}
+		}));
+var _user$project$Main$initialState = {
+	userName: '',
+	email: '',
+	stuff: 'empty stuff',
+	tournaments: {ctor: '[]'}
+};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {userName: a, email: b, stuff: c, tournaments: d};
 	});
+var _user$project$Main$Tournament = F2(
+	function (a, b) {
+		return {name: a, id: b};
+	});
+var _user$project$Main$tournamentDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_user$project$Main$Tournament,
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$string));
+var _user$project$Main$tournamentsDecoder = A2(
+	_elm_lang$core$Json_Decode$field,
+	'data',
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'tournaments',
+		_elm_lang$core$Json_Decode$list(_user$project$Main$tournamentDecoder)));
+var _user$project$Main$UpdateTournamentsShown = function (a) {
+	return {ctor: 'UpdateTournamentsShown', _0: a};
+};
+var _user$project$Main$fetchTournaments = A2(
+	_elm_lang$http$Http$send,
+	_user$project$Main$UpdateTournamentsShown,
+	A3(_elm_lang$http$Http$post, 'http://localhost:4000/api', _user$project$Main$tournamentsRequestBody, _user$project$Main$tournamentsDecoder));
 var _user$project$Main$SetUserName = function (a) {
 	return {ctor: 'SetUserName', _0: a};
 };
@@ -9074,7 +9162,13 @@ var _user$project$Main$update = F2(
 		var _p0 = msg;
 		switch (_p0.ctor) {
 			case 'Nada':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{stuff: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'NewStuff':
 				if (_p0._0.ctor === 'Ok') {
 					var _p1 = _elm_lang$core$List$head(_p0._0._0);
@@ -9124,10 +9218,41 @@ var _user$project$Main$update = F2(
 						{email: _p0._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'CreateNewUser':
 				return {ctor: '_Tuple2', _0: model, _1: _user$project$Main$getStuff};
+			default:
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{tournaments: _p0._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					if (_p0._0._0.ctor === 'BadPayload') {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{stuff: _p0._0._0._0}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{stuff: 'error fetching tournaments'}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					}
+				}
 		}
 	});
+var _user$project$Main$Nada = function (a) {
+	return {ctor: 'Nada', _0: a};
+};
 var _user$project$Main$CreateNewUser = {ctor: 'CreateNewUser'};
 var _user$project$Main$view = function (model) {
 	return A2(
@@ -9217,22 +9342,21 @@ var _user$project$Main$view = function (model) {
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$html$Html$text(model.stuff),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$allTournaments(model),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{
-		init: {
-			ctor: '_Tuple2',
-			_0: {userName: '', email: '', stuff: 'empty stuff'},
-			_1: _elm_lang$core$Platform_Cmd$none
-		},
+		init: {ctor: '_Tuple2', _0: _user$project$Main$initialState, _1: _user$project$Main$fetchTournaments},
 		update: _user$project$Main$update,
 		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
 		view: _user$project$Main$view
 	})();
-var _user$project$Main$Nada = {ctor: 'Nada'};
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
