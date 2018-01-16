@@ -1,10 +1,11 @@
 defmodule Chips.AccessData do
 
-  alias Chips.{Repo, Tournament, User}
+  alias Chips.{Repo, Staker, StakingContract, Tournament, User}
 
   def list_tournaments do
     Repo.all(Tournament)
       |> Repo.preload(:users)
+      |> Repo.preload(staking_contracts: [:staker])
   end
 
   def list_users do
@@ -27,5 +28,18 @@ defmodule Chips.AccessData do
     user_with_tournament = Ecto.Changeset.change(user)
       |> Ecto.Changeset.put_assoc(:tournaments, [tournament])
       |> Repo.update
+  end
+
+  def create_staking_contract(args) do
+    staker = Repo.get(Staker, args.staker_id)
+    tournament = Repo.get(Tournament, args.tournament_id)
+    user = Repo.get(User, args.user_id)
+
+    %StakingContract{}
+    |> StakingContract.changeset(args)
+    |> Ecto.Changeset.put_assoc(:staker, staker)
+    |> Ecto.Changeset.put_assoc(:tournament, tournament)
+    |> Ecto.Changeset.put_assoc(:user, user)
+    |> Repo.insert
   end
 end

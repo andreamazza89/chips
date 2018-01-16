@@ -43,6 +43,16 @@ defmodule ChipsWeb.Schema do
 			resolve &Resolvers.Data.associate_user_to_tournament/3
 		end
 
+    field :create_staking_contract, type: :staking_contract do
+      arg :half_percents_sold, non_null(:integer)
+      arg :rate, non_null(:float)
+      arg :staker_id, non_null(:integer)
+      arg :tournament_id, non_null(:integer)
+      arg :user_id, non_null(:integer)
+
+      resolve &Resolvers.Data.create_staking_contract/3
+    end
+
 	end
 
 end

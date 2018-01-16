@@ -20,4 +20,8 @@ defmodule ChipsWeb.Resolvers.Data do
     Chips.AccessData.associate_user_to_tournament(args)
   end
 
+  def create_staking_contract(_parent, args, _resolution) do
+    Chips.AccessData.create_staking_contract(args)
+  end
+
 end

@@ -10,6 +10,7 @@ defmodule Chips.Tournament do
     field :starts, :naive_datetime
 
     has_many :staking_contracts, Chips.StakingContract
+    many_to_many :users, Chips.User, join_through: "users_tournaments"
 
     timestamps()
   end

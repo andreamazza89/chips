@@ -7,10 +7,10 @@ defmodule Chips.StakingContract do
   schema "staking_contracts" do
     field :half_percents_sold, :integer
     field :rate, :float
-    field :tournament_id, :id
-    field :user_id, :id
 
     belongs_to :staker, Chips.Staker
+    belongs_to :tournament, Chips.Tournament
+    belongs_to :user, Chips.User
 
     timestamps()
   end

@@ -1,0 +1,4 @@
+- in `create_staking_contract`, I need to check that staker, tournament, user
+actually exist in the database; how to do that? --- assoc_constraint maybe?
+
+- add uniqueness constraint of email
