@@ -41,5 +41,7 @@ defmodule Chips.AccessData do
     |> Ecto.Changeset.put_assoc(:tournament, tournament)
     |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert
+
+    list_tournaments
   end
 end

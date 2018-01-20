@@ -21,7 +21,7 @@ defmodule ChipsWeb.Resolvers.Data do
   end
 
   def create_staking_contract(_parent, args, _resolution) do
-    Chips.AccessData.create_staking_contract(args)
+    {:ok, Chips.AccessData.create_staking_contract(args)}
   end
 
 end
