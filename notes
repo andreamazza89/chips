@@ -1,4 +1,31 @@
+### Todos
+
+- remove stakers (staker should just be another user)
+
+- add series table (one series has many tournaments)
+
+- create series
+
+- create tournament in series
+
+- minimal css
+
+- add cost field to staking contract (automatically generated?)
+
 - in `create_staking_contract`, I need to check that staker, tournament, user
 actually exist in the database; how to do that? --- assoc_constraint maybe?
 
-- add uniqueness constraint of email
+- add uniqueness constraint of email, and all other constraints necessary
+
+- update tournament table to have an entry cost/fee, maybe No of entries, any other data?
+
+- user authentication/session to support multiple users
+
+
+### Features for later on:
+
+- Staker view (a staker can only see what they staked on, without seeing other stakers)
+
+- emails for winnings, summary, etc..
+
+- sweat patch (player can create a live feed for stakers and friends to know how they're doing and provide supports)

@@ -143,7 +143,7 @@ newStakeContractRequestBody stakerId halfPercents userId rate tournamentId =
                         ++ ", userId: "
                         ++ userId
                         ++ ")"
-                        ++ "{ name, id, stakingContracts { staker { name }, rate } }"
+                        ++ "{ name, id, stakingContracts { staker { name }, rate, halfPercentsSold } }"
                         ++ "}"
                     )
               )
@@ -160,7 +160,7 @@ tournamentsRequestBody : Body
 tournamentsRequestBody =
     Http.jsonBody
         (Json.Encode.object
-            [ ( "query", Json.Encode.string "query { tournaments { name, id, stakingContracts { staker { name }, rate } } }" ) ]
+            [ ( "query", Json.Encode.string "query { tournaments { name, id, stakingContracts { staker { name }, rate, halfPercentsSold } } }" ) ]
         )
 
 
@@ -188,9 +188,10 @@ tournamentDecoder =
 
 stakingContractDecoder : Json.Decode.Decoder StakingContract
 stakingContractDecoder =
-    map2 StakingContract
+    map3 StakingContract
         (field "rate" float)
         (field "staker" stakerDecoder)
+        (field "halfPercentsSold" int)
 
 
 stakerDecoder : Json.Decode.Decoder Staker
@@ -202,6 +203,7 @@ stakerDecoder =
 type alias StakingContract =
     { rate : Float
     , staker : Staker
+    , halfPercentsSold : Int
     }
 
 
@@ -266,7 +268,7 @@ allTournaments model =
 viewTournaments : List Tournament -> Html Msg
 viewTournaments tournaments =
     div []
-        [ h3 [] [ text "Tournaments" ]
+        [ h3 [] [ text "Your tournaments" ]
         , div [] (List.map viewTournament tournaments)
         ]
 
@@ -283,7 +285,15 @@ viewTournament tournament =
 
 viewStakingContract : StakingContract -> Html Msg
 viewStakingContract stakingContract =
-    li [] [ text (stakingContract.staker.name ++ " " ++ toString stakingContract.rate) ]
+    li []
+        [ text
+            (stakingContract.staker.name
+                ++ " | rate: "
+                ++ toString stakingContract.rate
+                ++ " | half_percents_sold: "
+                ++ toString stakingContract.halfPercentsSold
+            )
+        ]
 
 
 newStakingContract : Tournament -> Html Msg

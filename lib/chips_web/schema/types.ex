@@ -11,7 +11,7 @@ defmodule ChipsWeb.Schema.Types do
 
   object :staking_contract do
     field :id, :id
-    field :half_percents_sold, :id
+    field :half_percents_sold, :integer
     field :rate, :float
 
     field :staker, :staker
