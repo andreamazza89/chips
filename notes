@@ -6,7 +6,9 @@
 
 - add series table (one series has many tournaments)
 
-- create series
+- show series with tournaments in UI
+
+- create series from UI
 
 - create tournament in series
 
@@ -18,6 +20,10 @@
 actually exist in the database; how to do that? --- assoc_constraint maybe?
 
 - add uniqueness constraint of email, and all other constraints necessary
+
+- maybe remove many to many join table users_tournaments.
+
+- maybe remove timestamps()?
 
 - update tournament table to have an entry cost/fee, maybe No of entries, any other data?
 

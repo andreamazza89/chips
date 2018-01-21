@@ -5,12 +5,12 @@ defmodule Chips.Tournament do
 
 
   schema "tournaments" do
-    field :city, :string
+    field :fee_in_cents, :integer
     field :name, :string
     field :starts, :naive_datetime
 
+    belongs_to :tournament_series, Chips.TournamentSeries
     has_many :staking_contracts, Chips.StakingContract
-    many_to_many :users, Chips.User, join_through: "users_tournaments"
 
     timestamps()
   end

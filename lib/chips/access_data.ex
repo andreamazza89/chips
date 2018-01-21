@@ -4,8 +4,7 @@ defmodule Chips.AccessData do
 
   def list_tournaments do
     Repo.all(Tournament)
-      |> Repo.preload(:users)
-      |> Repo.preload(staking_contracts: [:staker, :player])
+      |> Repo.preload(staking_contracts: [:staker])
   end
 
   def list_users do
@@ -13,7 +12,7 @@ defmodule Chips.AccessData do
   end
 
   def create_tournament(args) do
-    Repo.insert(%Tournament{city: args.city, name: args.name, starts: args.starts})
+    Repo.insert(%Tournament{fee_in_cents: args.fee_in_cents, name: args.name, starts: args.starts})
   end
 
   def create_user(args) do
