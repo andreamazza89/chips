@@ -6,6 +6,7 @@ import Html.Events exposing (..)
 import Http exposing (..)
 import Json.Decode exposing (list, field, float, map2, map3, string, int)
 import Json.Encode exposing (encode, object)
+import Platform.Cmd exposing (batch)
 
 
 type alias Model =
@@ -17,6 +18,7 @@ type alias Model =
     , stakerId : String
     , stuff : String
     , tournaments : List Tournament
+    , users : List User
     }
 
 
@@ -31,6 +33,7 @@ type Msg
     | SetEmail String
     | SetUserName String
     | UpdateTournamentsShown (Result Http.Error (List Tournament))
+    | UpdateUsersShown (Result Http.Error (List User))
 
 
 initialState : Model
@@ -43,13 +46,14 @@ initialState =
     , stakerId = "0"
     , stuff = "empty stuff"
     , tournaments = []
+    , users = []
     }
 
 
 main : Program Never Model Msg
 main =
     Html.program
-        { init = ( initialState, fetchTournaments )
+        { init = ( initialState, batch [ fetchTournaments, fetchUsers ] )
         , update = update
         , subscriptions = (always Sub.none)
         , view = view
@@ -105,7 +109,7 @@ update msg model =
             ( { model | stakerId = stakerId }, Cmd.none )
 
         CreateNewUser ->
-            ( model, getStuff )
+            ( model, createUser model.userName model.email )
 
         UpdateTournamentsShown (Ok newStuff) ->
             ( { model | tournaments = newStuff }, Cmd.none )
@@ -115,6 +119,15 @@ update msg model =
 
         UpdateTournamentsShown (Err _) ->
             ( { model | stuff = "error fetching tournaments" }, Cmd.none )
+
+        UpdateUsersShown (Ok newUsers) ->
+            ( { model | users = newUsers }, Cmd.none )
+
+        UpdateUsersShown (Err (BadPayload message response)) ->
+            ( { model | stuff = message }, Cmd.none )
+
+        UpdateUsersShown (Err _) ->
+            ( { model | stuff = "error fetching users" }, Cmd.none )
 
 
 createNewStakingContract : Model -> TournamentId -> Cmd Msg
@@ -140,7 +153,7 @@ newStakeContractRequestBody stakerId halfPercents userId rate tournamentId =
                         ++ stakerId
                         ++ ", tournamentId: "
                         ++ tournamentId
-                        ++ ", userId: "
+                        ++ ", playerId: "
                         ++ userId
                         ++ ")"
                         ++ "{ name, id, stakingContracts { staker { name }, rate, halfPercentsSold } }"
@@ -148,6 +161,33 @@ newStakeContractRequestBody stakerId halfPercents userId rate tournamentId =
                     )
               )
             ]
+        )
+
+
+fetchUsers : Cmd Msg
+fetchUsers =
+    Http.send UpdateUsersShown <| Http.post "http://localhost:4000/api" usersRequestBody usersDecoder
+
+
+usersDecoder : Json.Decode.Decoder (List User)
+usersDecoder =
+    field "data" <|
+        field "users" <|
+            Json.Decode.list userDecoder
+
+
+userDecoder : Json.Decode.Decoder User
+userDecoder =
+    map2 User
+        (field "id" string)
+        (field "name" string)
+
+
+usersRequestBody : Body
+usersRequestBody =
+    Http.jsonBody
+        (Json.Encode.object
+            [ ( "query", Json.Encode.string "query { users { name, id } }" ) ]
         )
 
 
@@ -211,33 +251,30 @@ type alias Staker =
     { name : String }
 
 
-getStuff : Cmd Msg
-getStuff =
-    Http.send NewStuff <| Http.post "http://localhost:4000/api" requestBody usersDecoder
+createUser : String -> String -> Cmd Msg
+createUser name email =
+    Http.send UpdateUsersShown <| Http.post "http://localhost:4000/api" (createUserRequestBody name email) usersMutationDecoder
 
 
-requestBody : Body
-requestBody =
+createUserRequestBody : String -> String -> Body
+createUserRequestBody name email =
     Http.jsonBody
         (Json.Encode.object
-            [ ( "query", Json.Encode.string "query { users { name } }" ) ]
+            [ ( "query", Json.Encode.string ("mutation createUser { createUser(name: \"" ++ name ++ "\", email: \"" ++ email ++ "\") { id, name } }") ) ]
         )
 
 
-type alias User =
-    String
-
-
-usersDecoder : Json.Decode.Decoder (List User)
-usersDecoder =
+usersMutationDecoder : Json.Decode.Decoder (List User)
+usersMutationDecoder =
     field "data" <|
-        field "users" <|
+        field "createUser" <|
             Json.Decode.list userDecoder
 
 
-userDecoder : Json.Decode.Decoder User
-userDecoder =
-    field "name" string
+type alias User =
+    { id : String
+    , name : String
+    }
 
 
 type alias Tournament =
@@ -255,7 +292,52 @@ view : Model -> Html Msg
 view model =
     div []
         [ text model.stuff
+        , users model
         , allTournaments model
+        ]
+
+
+users : Model -> Html Msg
+users model =
+    div []
+        [ h3 [] [ text "Users in the system" ]
+        , showUsers model.users
+        , newUser
+        ]
+
+
+showUsers : List User -> Html Msg
+showUsers users =
+    ul []
+        (List.map
+            (\user -> li [] [ text ("(id: " ++ user.id ++ ") " ++ user.name) ])
+            users
+        )
+
+
+newUser : Html Msg
+newUser =
+    div []
+        [ Html.form
+            [ onSubmit (CreateNewUser) ]
+            [ label []
+                [ text "User name"
+                , input
+                    [ name "user-name"
+                    , onInput <| SetUserName
+                    ]
+                    []
+                ]
+            , label []
+                [ text "Email"
+                , input
+                    [ name "email"
+                    , onInput <| SetEmail
+                    ]
+                    []
+                ]
+            , button [] [ text "submit" ]
+            ]
         ]
 
 

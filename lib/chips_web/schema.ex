@@ -29,7 +29,7 @@ defmodule ChipsWeb.Schema do
 			resolve &Resolvers.Data.create_tournament/3
 		end
 
-		field :create_user, type: :user do
+		field :create_user, type: list_of(:user) do
 			arg :email, non_null(:string)
 			arg :name, non_null(:string)
 

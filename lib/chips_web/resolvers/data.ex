@@ -13,7 +13,7 @@ defmodule ChipsWeb.Resolvers.Data do
   end
 
   def create_user(_parent, args, _resolution) do
-    Chips.AccessData.create_user(args)
+    {:ok, Chips.AccessData.create_user(args)}
   end
 
   def associate_user_to_tournament(_parent, args, _resolution) do

@@ -10,7 +10,6 @@ defmodule Chips.AccessData do
 
   def list_users do
     Repo.all(User)
-      |> Repo.preload(:tournaments)
   end
 
   def create_tournament(args) do
@@ -19,6 +18,8 @@ defmodule Chips.AccessData do
 
   def create_user(args) do
     Repo.insert(%User{email: args.email, name: args.name})
+
+    list_users
   end
 
   def associate_user_to_tournament(args) do
