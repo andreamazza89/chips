@@ -2,6 +2,8 @@
 
 - remove stakers (staker should just be another user)
 
+- create user from UI
+
 - add series table (one series has many tournaments)
 
 - create series

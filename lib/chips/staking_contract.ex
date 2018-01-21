@@ -8,9 +8,9 @@ defmodule Chips.StakingContract do
     field :half_percents_sold, :integer
     field :rate, :float
 
-    belongs_to :staker, Chips.Staker
+    belongs_to :staker, Chips.User
     belongs_to :tournament, Chips.Tournament
-    belongs_to :user, Chips.User
+    belongs_to :player, Chips.User
 
     timestamps()
   end

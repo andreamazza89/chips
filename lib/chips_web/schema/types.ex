@@ -1,22 +1,14 @@
 defmodule ChipsWeb.Schema.Types do
   use Absinthe.Schema.Notation
 
-  object :staker do
-    field :id, :id
-    field :email, :string
-    field :name, :string
-
-    field :staking_contracts, list_of(:staking_contract)
-  end
-
   object :staking_contract do
     field :id, :id
     field :half_percents_sold, :integer
     field :rate, :float
 
-    field :staker, :staker
+    field :staker, :user
     field :tournament, :tournament
-    field :user, :user
+    field :player, :user
   end
 
   object :tournament do

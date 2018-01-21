@@ -18,13 +18,13 @@ tournament = %Chips.Tournament{
   starts: ~N[2017-09-04 09:00:00]
 }
 player_tournament_relation = %Chips.UserTournament{ user_id: 1, tournament_id: 1 }
-staker = %Chips.Staker{ email: "paolo@pirro.com", name: "pirro" }
+staker = %Chips.User{ email: "paolo@pirro.com", name: "pirro" }
 staking_contract = %Chips.StakingContract{
   half_percents_sold: 2,
   rate: 1.35,
   tournament_id: 1,
-  user_id: 1,
-  staker_id: 1
+  player_id: 1,
+  staker_id: 2
 }
 
 Chips.Repo.insert!(player)
