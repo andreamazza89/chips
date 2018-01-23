@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http exposing (..)
-import Json.Decode exposing (list, field, float, map2, map3, string, int)
+import Json.Decode exposing (list, field, float, map2, map3, map4, string, int)
 import Json.Encode exposing (encode, object)
 import Platform.Cmd exposing (batch)
 
@@ -212,7 +212,16 @@ tournamentSeriesesRequestBody : Body
 tournamentSeriesesRequestBody =
     Http.jsonBody
         (Json.Encode.object
-            [ ( "query", Json.Encode.string "query { tournamentSeries { tournaments { name, id, stakingContracts { staker { name }, rate, halfPercentsSold } } } }" ) ]
+            [ ( "query"
+              , Json.Encode.string
+                    ("query { tournamentSeries {"
+                        ++ "city,"
+                        ++ "id,"
+                        ++ "name,"
+                        ++ " tournaments { name, id, stakingContracts { staker { name }, rate, halfPercentsSold } } } }"
+                    )
+              )
+            ]
         )
 
 
@@ -232,7 +241,10 @@ tournamentSeriesesDecoder =
 
 tournamentSeriesDecoder : Json.Decode.Decoder TournamentSeries
 tournamentSeriesDecoder =
-    Json.Decode.map TournamentSeries
+    map4 TournamentSeries
+        (field "city" string)
+        (field "id" string)
+        (field "name" string)
         (field "tournaments" (Json.Decode.list tournamentDecoder))
 
 
@@ -303,7 +315,11 @@ type alias User =
 
 
 type alias TournamentSeries =
-    { tournaments : List Tournament }
+    { city : String
+    , id : String
+    , name : String
+    , tournaments : List Tournament
+    }
 
 
 type alias Tournament =
@@ -334,7 +350,7 @@ allSerieses model =
 viewSeries : TournamentSeries -> Html Msg
 viewSeries series =
     div []
-        [ h3 [] [ text "Series begins here" ]
+        [ h3 [] [ text series.name ]
         , viewTournaments series
         ]
 
