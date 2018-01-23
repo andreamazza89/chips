@@ -18,6 +18,7 @@ type alias Model =
     , stakerId : String
     , stuff : String
     , tournaments : List Tournament
+    , tournamentSerieses : List TournamentSeries
     , users : List User
     }
 
@@ -33,6 +34,7 @@ type Msg
     | SetEmail String
     | SetUserName String
     | UpdateTournamentsShown (Result Http.Error (List Tournament))
+    | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
 
 
@@ -46,6 +48,7 @@ initialState =
     , stakerId = "0"
     , stuff = "empty stuff"
     , tournaments = []
+    , tournamentSerieses = []
     , users = []
     }
 
@@ -53,7 +56,7 @@ initialState =
 main : Program Never Model Msg
 main =
     Html.program
-        { init = ( initialState, batch [ fetchTournaments, fetchUsers ] )
+        { init = ( initialState, batch [ fetchSerieses, fetchUsers ] )
         , update = update
         , subscriptions = (always Sub.none)
         , view = view
@@ -118,6 +121,15 @@ update msg model =
             ( { model | stuff = message }, Cmd.none )
 
         UpdateTournamentsShown (Err _) ->
+            ( { model | stuff = "error fetching tournaments" }, Cmd.none )
+
+        UpdateTournamentSeriesesShow (Ok serieses) ->
+            ( { model | tournamentSerieses = serieses }, Cmd.none )
+
+        UpdateTournamentSeriesesShow (Err (BadPayload message response)) ->
+            ( { model | stuff = message }, Cmd.none )
+
+        UpdateTournamentSeriesesShow (Err _) ->
             ( { model | stuff = "error fetching tournaments" }, Cmd.none )
 
         UpdateUsersShown (Ok newUsers) ->
@@ -191,16 +203,16 @@ usersRequestBody =
         )
 
 
-fetchTournaments : Cmd Msg
-fetchTournaments =
-    Http.send UpdateTournamentsShown <| Http.post "http://localhost:4000/api" tournamentsRequestBody tournamentsDecoder
+fetchSerieses : Cmd Msg
+fetchSerieses =
+    Http.send UpdateTournamentSeriesesShow <| Http.post "http://localhost:4000/api" tournamentSeriesesRequestBody tournamentSeriesesDecoder
 
 
-tournamentsRequestBody : Body
-tournamentsRequestBody =
+tournamentSeriesesRequestBody : Body
+tournamentSeriesesRequestBody =
     Http.jsonBody
         (Json.Encode.object
-            [ ( "query", Json.Encode.string "query { tournaments { name, id, stakingContracts { staker { name }, rate, halfPercentsSold } } }" ) ]
+            [ ( "query", Json.Encode.string "query { tournamentSeries { tournaments { name, id, stakingContracts { staker { name }, rate, halfPercentsSold } } } }" ) ]
         )
 
 
@@ -209,6 +221,19 @@ tournamentMutationDecoder =
     field "data" <|
         field "createStakingContract" <|
             Json.Decode.list tournamentDecoder
+
+
+tournamentSeriesesDecoder : Json.Decode.Decoder (List TournamentSeries)
+tournamentSeriesesDecoder =
+    field "data" <|
+        field "tournamentSeries" <|
+            Json.Decode.list tournamentSeriesDecoder
+
+
+tournamentSeriesDecoder : Json.Decode.Decoder TournamentSeries
+tournamentSeriesDecoder =
+    Json.Decode.map TournamentSeries
+        (field "tournaments" (Json.Decode.list tournamentDecoder))
 
 
 tournamentsDecoder : Json.Decode.Decoder (List Tournament)
@@ -277,6 +302,10 @@ type alias User =
     }
 
 
+type alias TournamentSeries =
+    { tournaments : List Tournament }
+
+
 type alias Tournament =
     { name : String
     , id : TournamentId
@@ -293,7 +322,20 @@ view model =
     div []
         [ text model.stuff
         , users model
-        , allTournaments model
+        , allSerieses model
+        ]
+
+
+allSerieses : Model -> Html Msg
+allSerieses model =
+    div [] (List.map viewSeries model.tournamentSerieses)
+
+
+viewSeries : TournamentSeries -> Html Msg
+viewSeries series =
+    div []
+        [ h3 [] [ text "Series begins here" ]
+        , viewTournaments series
         ]
 
 
@@ -341,17 +383,11 @@ newUser =
         ]
 
 
-allTournaments : Model -> Html Msg
-allTournaments model =
+viewTournaments : TournamentSeries -> Html Msg
+viewTournaments series =
     div []
-        [ viewTournaments model.tournaments ]
-
-
-viewTournaments : List Tournament -> Html Msg
-viewTournaments tournaments =
-    div []
-        [ h3 [] [ text "Your tournaments" ]
-        , div [] (List.map viewTournament tournaments)
+        [ h3 [] [ text "Your tournaments in this series" ]
+        , div [] (List.map viewTournament series.tournaments)
         ]
 
 

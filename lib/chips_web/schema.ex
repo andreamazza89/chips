@@ -8,6 +8,10 @@ defmodule ChipsWeb.Schema do
 
   query do
 
+     field :tournament_series, list_of(:tournament_series) do
+       resolve &Resolvers.Data.list_tournament_series/3
+     end
+
      field :tournaments, list_of(:tournament) do
        resolve &Resolvers.Data.list_tournaments/3
      end
@@ -21,10 +25,18 @@ defmodule ChipsWeb.Schema do
 
 	mutation do
 
-		field :create_tournament, type: :tournament do
+		field :create_tournament_series, type: list_of(:tournament_series) do
 			arg :city, non_null(:string)
 			arg :name, non_null(:string)
+
+			resolve &Resolvers.Data.create_tournament_series/3
+		end
+
+		field :create_tournament, type: list_of(:tournament_series) do
+			arg :fee_in_cents, non_null(:integer)
+			arg :name, non_null(:string)
 			arg :starts, :naive_datetime
+      arg :tournament_series_id, non_null(:string)
 
 			resolve &Resolvers.Data.create_tournament/3
 		end
@@ -43,7 +55,7 @@ defmodule ChipsWeb.Schema do
 			resolve &Resolvers.Data.associate_user_to_tournament/3
 		end
 
-    field :create_staking_contract, type: list_of(:tournament) do
+    field :create_staking_contract, type: list_of(:tournament_series) do
       arg :half_percents_sold, non_null(:integer)
       arg :rate, non_null(:float)
       arg :staker_id, non_null(:integer)

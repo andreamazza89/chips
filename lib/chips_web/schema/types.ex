@@ -11,6 +11,14 @@ defmodule ChipsWeb.Schema.Types do
     field :player, :user
   end
 
+  object :tournament_series do
+    field :city, :string
+    field :id, :id
+    field :name, :string
+
+    field :tournaments, list_of(:tournament)
+  end
+
   object :tournament do
     field :id, :id
     field :city, :string

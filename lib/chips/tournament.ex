@@ -18,7 +18,7 @@ defmodule Chips.Tournament do
   @doc false
   def changeset(%Tournament{} = tournament, attrs) do
     tournament
-    |> cast(attrs, [:name, :city, :starts])
-    |> validate_required([:name, :city, :starts])
+    |> cast(attrs, [:name, :starts, :fee_in_cents, :tournament_series_id])
+    |> validate_required([:name, :starts])
   end
 end
