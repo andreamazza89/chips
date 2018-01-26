@@ -19,7 +19,7 @@ defmodule Chips.AccessData do
   def create_tournament_series(args) do
     Repo.insert(%TournamentSeries{city: args.city, name: args.name})
 
-    Repo.all(TournamentSeries)
+    list_tournament_serieses()
   end
 
   def create_tournament(args) do
@@ -27,7 +27,6 @@ defmodule Chips.AccessData do
       fee_in_cents: args.fee_in_cents,
       name: args.name,
       tournament_series_id: args.tournament_series_id,
-      starts: args.starts
     }
 
     Tournament.changeset(%Tournament{}, tournament_data)

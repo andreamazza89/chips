@@ -1,1 +1,35 @@
 /* This file is for your main application css. */
+.new-series-container {
+  background-color: #2aa198;
+}
+
+.tournament {
+  background-color: #6c71c4;
+  border-radius: 50px;
+  margin: 5px;
+  padding: 20px;
+  min-width: 350px;
+  max-width: 350px;
+}
+
+.tournament-series {
+  background-color: #93a1a1;
+}
+
+.tournaments-wrapper {
+  display: flex;
+  overflow: auto;
+}
+
+.users-container {
+  background-color: #657b83;
+}
+
+input {
+  background-color: #eee8d5;
+}
+
+label {
+  display: block;
+  margin: 8px;
+}

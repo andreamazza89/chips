@@ -14,6 +14,10 @@ type alias Model =
     , userId : String
     , email : String
     , halfPercentsSold : Int
+    , newTournamentName : String
+    , newTournamentFeeInCents : Int
+    , newTournamentSeriesCity : String
+    , newTournamentSeriesName : String
     , rate : Float
     , stakerId : String
     , stuff : String
@@ -25,6 +29,8 @@ type alias Model =
 
 type Msg
     = CreateNewStakingContract TournamentId
+    | CreateNewTournament SeriesId
+    | CreateNewTournamentSeries
     | CreateNewUser
     | Nada String
     | NewStuff (Result Http.Error (List String))
@@ -32,6 +38,10 @@ type Msg
     | SetRate String
     | SetStakerId String
     | SetEmail String
+    | SetNewTournamentName String
+    | SetNewTournamentFeeInCents String
+    | SetNewTournamentSeriesCity String
+    | SetNewTournamentSeriesName String
     | SetUserName String
     | UpdateTournamentsShown (Result Http.Error (List Tournament))
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
@@ -44,9 +54,13 @@ initialState =
     , userId = "1"
     , email = ""
     , halfPercentsSold = 0
+    , newTournamentName = ""
+    , newTournamentFeeInCents = 0
+    , newTournamentSeriesCity = ""
+    , newTournamentSeriesName = ""
     , rate = 0
     , stakerId = "0"
-    , stuff = "empty stuff"
+    , stuff = "errors go here"
     , tournaments = []
     , tournamentSerieses = []
     , users = []
@@ -100,6 +114,23 @@ update msg model =
         SetEmail email ->
             ( { model | email = email }, Cmd.none )
 
+        SetNewTournamentName name ->
+            ( { model | newTournamentName = name }, Cmd.none )
+
+        SetNewTournamentFeeInCents fee ->
+            case (String.toInt fee) of
+                Ok parsedFee ->
+                    ( { model | newTournamentFeeInCents = parsedFee }, Cmd.none )
+
+                Err message ->
+                    ( { model | stuff = message }, Cmd.none )
+
+        SetNewTournamentSeriesCity city ->
+            ( { model | newTournamentSeriesCity = city }, Cmd.none )
+
+        SetNewTournamentSeriesName name ->
+            ( { model | newTournamentSeriesName = name }, Cmd.none )
+
         SetRate rate ->
             case (String.toFloat rate) of
                 Ok rate ->
@@ -113,6 +144,12 @@ update msg model =
 
         CreateNewUser ->
             ( model, createUser model.userName model.email )
+
+        CreateNewTournament seriesId ->
+            ( model, createTournament model seriesId )
+
+        CreateNewTournamentSeries ->
+            ( model, createTournamentSeries model )
 
         UpdateTournamentsShown (Ok newStuff) ->
             ( { model | tournaments = newStuff }, Cmd.none )
@@ -142,9 +179,44 @@ update msg model =
             ( { model | stuff = "error fetching users" }, Cmd.none )
 
 
+createTournamentSeries : Model -> Cmd Msg
+createTournamentSeries model =
+    Http.send UpdateTournamentSeriesesShow <|
+        Http.post
+            "http://localhost:4000/api"
+            (newTournamentSeriesRequestBody model.newTournamentSeriesCity model.newTournamentSeriesName)
+            yetAnotherDecoder
+
+
+newTournamentSeriesRequestBody : String -> String -> Body
+newTournamentSeriesRequestBody city name =
+    Http.jsonBody
+        (Json.Encode.object
+            [ ( "query"
+              , Json.Encode.string
+                    ("mutation { createTournamentSeries(city: \""
+                        ++ city
+                        ++ "\", name: \""
+                        ++ name
+                        ++ "\")"
+                        ++ "{ id, name, city, tournaments {id, name, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "}"
+                    )
+              )
+            ]
+        )
+
+
+yetAnotherDecoder : Json.Decode.Decoder (List TournamentSeries)
+yetAnotherDecoder =
+    field "data" <|
+        field "createTournamentSeries" <|
+            Json.Decode.list tournamentSeriesDecoder
+
+
 createNewStakingContract : Model -> TournamentId -> Cmd Msg
 createNewStakingContract model tournamentId =
-    Http.send UpdateTournamentsShown <|
+    Http.send UpdateTournamentSeriesesShow <|
         Http.post
             "http://localhost:4000/api"
             (newStakeContractRequestBody model.stakerId model.halfPercentsSold model.userId model.rate tournamentId)
@@ -168,7 +240,37 @@ newStakeContractRequestBody stakerId halfPercents userId rate tournamentId =
                         ++ ", playerId: "
                         ++ userId
                         ++ ")"
-                        ++ "{ name, id, stakingContracts { staker { name }, rate, halfPercentsSold } }"
+                        ++ "{ id, name, city, tournaments {id, name, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "}"
+                    )
+              )
+            ]
+        )
+
+
+createTournament : Model -> SeriesId -> Cmd Msg
+createTournament model seriesId =
+    Http.send UpdateTournamentSeriesesShow <|
+        Http.post
+            "http://localhost:4000/api"
+            (newTournamentRequestBody model.newTournamentName model.newTournamentFeeInCents seriesId)
+            seriesMutationDecoder
+
+
+newTournamentRequestBody : String -> Int -> SeriesId -> Body
+newTournamentRequestBody name feeInCents seriesId =
+    Http.jsonBody
+        (Json.Encode.object
+            [ ( "query"
+              , Json.Encode.string
+                    ("mutation { createTournament(name: \""
+                        ++ name
+                        ++ "\", feeInCents: "
+                        ++ toString feeInCents
+                        ++ ", tournamentSeriesId: \""
+                        ++ seriesId
+                        ++ "\")"
+                        ++ "{ id, name, city, tournaments {id, name, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -225,11 +327,18 @@ tournamentSeriesesRequestBody =
         )
 
 
-tournamentMutationDecoder : Json.Decode.Decoder (List Tournament)
+seriesMutationDecoder : Json.Decode.Decoder (List TournamentSeries)
+seriesMutationDecoder =
+    field "data" <|
+        field "createTournament" <|
+            Json.Decode.list tournamentSeriesDecoder
+
+
+tournamentMutationDecoder : Json.Decode.Decoder (List TournamentSeries)
 tournamentMutationDecoder =
     field "data" <|
         field "createStakingContract" <|
-            Json.Decode.list tournamentDecoder
+            Json.Decode.list tournamentSeriesDecoder
 
 
 tournamentSeriesesDecoder : Json.Decode.Decoder (List TournamentSeries)
@@ -282,6 +391,10 @@ type alias StakingContract =
     , staker : Staker
     , halfPercentsSold : Int
     }
+
+
+type alias SeriesId =
+    String
 
 
 type alias Staker =
@@ -338,7 +451,35 @@ view model =
     div []
         [ text model.stuff
         , users model
+        , newSeries
         , allSerieses model
+        ]
+
+
+newSeries : Html Msg
+newSeries =
+    div [ class "new-series-container" ]
+        [ text "Create new tournament series"
+        , Html.form
+            [ onSubmit (CreateNewTournamentSeries) ]
+            [ label []
+                [ text "city"
+                , input
+                    [ name "city"
+                    , onInput <| SetNewTournamentSeriesCity
+                    ]
+                    []
+                ]
+            , label []
+                [ text "name"
+                , input
+                    [ name "name"
+                    , onInput <| SetNewTournamentSeriesName
+                    ]
+                    []
+                ]
+            , button [] [ text "submit" ]
+            ]
         ]
 
 
@@ -349,7 +490,7 @@ allSerieses model =
 
 viewSeries : TournamentSeries -> Html Msg
 viewSeries series =
-    div []
+    div [ class "tournament-series" ]
         [ h3 [] [ text series.name ]
         , viewTournaments series
         ]
@@ -357,7 +498,7 @@ viewSeries series =
 
 users : Model -> Html Msg
 users model =
-    div []
+    div [ class "users-container" ]
         [ h3 [] [ text "Users in the system" ]
         , showUsers model.users
         , newUser
@@ -376,7 +517,8 @@ showUsers users =
 newUser : Html Msg
 newUser =
     div []
-        [ Html.form
+        [ text "Create new user below"
+        , Html.form
             [ onSubmit (CreateNewUser) ]
             [ label []
                 [ text "User name"
@@ -402,14 +544,41 @@ newUser =
 viewTournaments : TournamentSeries -> Html Msg
 viewTournaments series =
     div []
-        [ h3 [] [ text "Your tournaments in this series" ]
-        , div [] (List.map viewTournament series.tournaments)
+        [ newTournament series
+        , div [ class "tournaments-wrapper" ] (List.map viewTournament series.tournaments)
+        ]
+
+
+newTournament : TournamentSeries -> Html Msg
+newTournament series =
+    div []
+        [ text ("Add a new tournament in this series")
+        , Html.form
+            [ onSubmit (CreateNewTournament series.id) ]
+            [ label []
+                [ text "name"
+                , input
+                    [ name "name"
+                    , onInput <| SetNewTournamentName
+                    ]
+                    []
+                ]
+            , label []
+                [ text "fee in cents"
+                , input
+                    [ name "fee in cents"
+                    , onInput <| SetNewTournamentFeeInCents
+                    ]
+                    []
+                ]
+            , button [] [ text "submit" ]
+            ]
         ]
 
 
 viewTournament : Tournament -> Html Msg
 viewTournament tournament =
-    div []
+    div [ class "tournament" ]
         [ h4 [] [ text tournament.name ]
         , ul [] (List.map viewStakingContract tournament.stakingContracts)
         , newStakingContract tournament
@@ -458,14 +627,14 @@ newStakerForm tournament =
                     , onInput <| SetHalfPercents
                     ]
                     []
-                , label []
-                    [ text "rate"
-                    , input
-                        [ name "rate"
-                        , onInput <| SetRate
-                        ]
-                        []
+                ]
+            , label []
+                [ text "rate"
+                , input
+                    [ name "rate"
+                    , onInput <| SetRate
                     ]
+                    []
                 ]
             , button [] [ text "submit" ]
             ]
