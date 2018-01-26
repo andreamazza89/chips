@@ -4,12 +4,12 @@ defmodule Chips.AccessData do
 
   def list_tournament_serieses do
     Repo.all(TournamentSeries)
-      |> Repo.preload(tournaments: [staking_contracts: [:staker]])
+    |> Repo.preload(tournaments: [staking_contracts: [:staker]])
   end
 
   def list_tournaments do
     Repo.all(Tournament)
-      |> Repo.preload(staking_contracts: [:staker])
+    |> Repo.preload(staking_contracts: [:staker])
   end
 
   def list_users do
@@ -17,38 +17,18 @@ defmodule Chips.AccessData do
   end
 
   def create_tournament_series(args) do
-    Repo.insert(%TournamentSeries{city: args.city, name: args.name})
-
-    list_tournament_serieses()
+    TournamentSeries.changeset(%TournamentSeries{}, args)
+    |> Repo.insert
   end
 
   def create_tournament(args) do
-    tournament_data = %{
-      fee_in_cents: args.fee_in_cents,
-      name: args.name,
-      tournament_series_id: args.tournament_series_id,
-    }
-
-    Tournament.changeset(%Tournament{}, tournament_data)
+    Tournament.changeset(%Tournament{}, args)
     |> Repo.insert()
-
-    list_tournament_serieses()
   end
 
   def create_user(args) do
-    Repo.insert(%User{email: args.email, name: args.name})
-
-    list_users()
-  end
-
-  def associate_user_to_tournament(args) do
-    user = Repo.get(User, args.user_id)
-      |> Repo.preload(:tournaments)
-    tournament = Repo.get(Tournament, args.tournament_id)
-
-    Ecto.Changeset.change(user)
-      |> Ecto.Changeset.put_assoc(:tournaments, [tournament])
-      |> Repo.update()
+    User.changeset(%User{}, args)
+    |> Repo.insert()
   end
 
   def create_staking_contract(args) do
@@ -62,7 +42,5 @@ defmodule Chips.AccessData do
     |> Ecto.Changeset.put_assoc(:tournament, tournament)
     |> Ecto.Changeset.put_assoc(:player, player)
     |> Repo.insert
-
-    list_tournament_serieses()
   end
 end

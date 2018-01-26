@@ -8,8 +8,8 @@ defmodule ChipsWeb.Schema do
 
   query do
 
-     field :tournament_series, list_of(:tournament_series) do
-       resolve &Resolvers.Data.list_tournament_series/3
+     field :tournament_serieses, list_of(:tournament_series) do
+       resolve &Resolvers.Data.list_tournament_serieses/3
      end
 
      field :tournaments, list_of(:tournament) do
@@ -46,13 +46,6 @@ defmodule ChipsWeb.Schema do
 			arg :name, non_null(:string)
 
 			resolve &Resolvers.Data.create_user/3
-		end
-
-		field :associate_user_to_tournament, type: :user do
-			arg :user_id, non_null(:string)
-			arg :tournament_id, non_null(:string)
-
-			resolve &Resolvers.Data.associate_user_to_tournament/3
 		end
 
     field :create_staking_contract, type: list_of(:tournament_series) do

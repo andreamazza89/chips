@@ -8,8 +8,6 @@ defmodule Chips.User do
     field :email, :string
     field :name, :string
 
-    many_to_many :tournaments, Chips.Tournament, join_through: "users_tournaments"
-
     timestamps()
   end
 

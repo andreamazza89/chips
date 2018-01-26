@@ -1,35 +1,37 @@
 defmodule ChipsWeb.Resolvers.Data do
 
-  def list_tournament_series(_parent, _args, _resolution) do
-    {:ok, Chips.AccessData.list_tournament_serieses()}
+  import Chips.AccessData
+
+  def list_tournament_serieses(_parent, _args, _resolution) do
+    {:ok, list_tournament_serieses()}
   end
 
   def list_tournaments(_parent, _args, _resolution) do
-    {:ok, Chips.AccessData.list_tournaments()}
+    {:ok, list_tournaments()}
   end
 
   def list_users(_parent, _args, _resolution) do
-    {:ok, Chips.AccessData.list_users()}
+    {:ok, list_users()}
   end
 
   def create_tournament_series(_parent, args, _resolution) do
-    {:ok, Chips.AccessData.create_tournament_series(args)}
+    create_tournament_series(args)
+    {:ok, list_tournament_serieses()}
   end
 
   def create_tournament(_parent, args, _resolution) do
-    {:ok, Chips.AccessData.create_tournament(args)}
+    create_tournament(args)
+    {:ok, list_tournament_serieses()}
   end
 
   def create_user(_parent, args, _resolution) do
-    {:ok, Chips.AccessData.create_user(args)}
-  end
-
-  def associate_user_to_tournament(_parent, args, _resolution) do
-    Chips.AccessData.associate_user_to_tournament(args)
+    create_user(args)
+    {:ok, list_users()}
   end
 
   def create_staking_contract(_parent, args, _resolution) do
-    {:ok, Chips.AccessData.create_staking_contract(args)}
+    create_staking_contract(args)
+    {:ok, list_tournament_serieses()}
   end
 
 end
