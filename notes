@@ -14,6 +14,12 @@
 
 - minimal css
 
+- refactor elm
+  - better model (forms with maybes)
+  - decoders
+  - graphql queries
+  - add tests
+
 - add cost field to staking contract (automatically generated?)
 
 - add winnings field to staking contract

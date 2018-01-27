@@ -42,25 +42,6 @@ type Msg
     | UpdateUsersShown (Result Http.Error (List User))
 
 
-initialState : Model
-initialState =
-    { userName = ""
-    , userId = "1"
-    , email = ""
-    , halfPercentsSold = 0
-    , newTournamentName = ""
-    , newTournamentFeeInCents = 0
-    , newTournamentSeriesCity = ""
-    , newTournamentSeriesName = ""
-    , rate = 0
-    , stakerId = "0"
-    , stuff = "errors go here"
-    , tournaments = []
-    , tournamentSerieses = []
-    , users = []
-    }
-
-
 type alias StakingContract =
     { rate : Float
     , staker : Staker
