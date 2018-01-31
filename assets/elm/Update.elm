@@ -11,23 +11,6 @@ update msg model =
         CreateNewStakingContract tournamentId ->
             ( model, createNewStakingContract model tournamentId )
 
-        Nada confirm ->
-            ( { model | stuff = confirm }, Cmd.none )
-
-        NewStuff (Ok newStuff) ->
-            case List.head (newStuff) of
-                Just name ->
-                    ( { model | stuff = name }, Cmd.none )
-
-                Nothing ->
-                    ( { model | stuff = "nothing found" }, Cmd.none )
-
-        NewStuff (Err (BadPayload message response)) ->
-            ( model, Cmd.none )
-
-        NewStuff (Err _) ->
-            ( { model | stuff = "error fetching new stuff" }, Cmd.none )
-
         SetHalfPercents halfPercentsSold ->
             case (String.toInt halfPercentsSold) of
                 Ok percent ->
@@ -78,15 +61,6 @@ update msg model =
 
         CreateNewTournamentSeries ->
             ( model, createTournamentSeries model )
-
-        UpdateTournamentsShown (Ok newStuff) ->
-            ( { model | tournaments = newStuff }, Cmd.none )
-
-        UpdateTournamentsShown (Err (BadPayload message response)) ->
-            ( { model | stuff = message }, Cmd.none )
-
-        UpdateTournamentsShown (Err _) ->
-            ( { model | stuff = "error fetching tournaments" }, Cmd.none )
 
         UpdateTournamentSeriesesShow (Ok serieses) ->
             ( { model | tournamentSerieses = serieses }, Cmd.none )

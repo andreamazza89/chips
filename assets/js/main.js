@@ -9087,9 +9087,6 @@ var _user$project$Data$UpdateUsersShown = function (a) {
 var _user$project$Data$UpdateTournamentSeriesesShow = function (a) {
 	return {ctor: 'UpdateTournamentSeriesesShow', _0: a};
 };
-var _user$project$Data$UpdateTournamentsShown = function (a) {
-	return {ctor: 'UpdateTournamentsShown', _0: a};
-};
 var _user$project$Data$SetUserName = function (a) {
 	return {ctor: 'SetUserName', _0: a};
 };
@@ -9116,12 +9113,6 @@ var _user$project$Data$SetRate = function (a) {
 };
 var _user$project$Data$SetHalfPercents = function (a) {
 	return {ctor: 'SetHalfPercents', _0: a};
-};
-var _user$project$Data$NewStuff = function (a) {
-	return {ctor: 'NewStuff', _0: a};
-};
-var _user$project$Data$Nada = function (a) {
-	return {ctor: 'Nada', _0: a};
 };
 var _user$project$Data$CreateNewUser = {ctor: 'CreateNewUser'};
 var _user$project$Data$CreateNewTournamentSeries = {ctor: 'CreateNewTournamentSeries'};
@@ -10012,55 +10003,14 @@ var _user$project$Update$update = F2(
 					_0: model,
 					_1: A2(_user$project$Queries$createNewStakingContract, model, _p0._0)
 				};
-			case 'Nada':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{stuff: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'NewStuff':
-				if (_p0._0.ctor === 'Ok') {
-					var _p1 = _elm_lang$core$List$head(_p0._0._0);
-					if (_p1.ctor === 'Just') {
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{stuff: _p1._0}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					} else {
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{stuff: 'nothing found'}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					}
-				} else {
-					if (_p0._0._0.ctor === 'BadPayload') {
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					} else {
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{stuff: 'error fetching new stuff'}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					}
-				}
 			case 'SetHalfPercents':
-				var _p2 = _elm_lang$core$String$toInt(_p0._0);
-				if (_p2.ctor === 'Ok') {
+				var _p1 = _elm_lang$core$String$toInt(_p0._0);
+				if (_p1.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{halfPercentsSold: _p2._0}),
+							{halfPercentsSold: _p1._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -10068,7 +10018,7 @@ var _user$project$Update$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{stuff: _p2._0}),
+							{stuff: _p1._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
@@ -10097,13 +10047,13 @@ var _user$project$Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SetNewTournamentFeeInCents':
-				var _p3 = _elm_lang$core$String$toInt(_p0._0);
-				if (_p3.ctor === 'Ok') {
+				var _p2 = _elm_lang$core$String$toInt(_p0._0);
+				if (_p2.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{newTournamentFeeInCents: _p3._0}),
+							{newTournamentFeeInCents: _p2._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -10111,7 +10061,7 @@ var _user$project$Update$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{stuff: _p3._0}),
+							{stuff: _p2._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
@@ -10132,13 +10082,13 @@ var _user$project$Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SetRate':
-				var _p4 = _elm_lang$core$String$toFloat(_p0._0);
-				if (_p4.ctor === 'Ok') {
+				var _p3 = _elm_lang$core$String$toFloat(_p0._0);
+				if (_p3.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{rate: _p4._0}),
+							{rate: _p3._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -10146,7 +10096,7 @@ var _user$project$Update$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{stuff: _p4._0}),
+							{stuff: _p3._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
@@ -10176,34 +10126,6 @@ var _user$project$Update$update = F2(
 					_0: model,
 					_1: _user$project$Queries$createTournamentSeries(model)
 				};
-			case 'UpdateTournamentsShown':
-				if (_p0._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{tournaments: _p0._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					if (_p0._0._0.ctor === 'BadPayload') {
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{stuff: _p0._0._0._0}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					} else {
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{stuff: 'error fetching tournaments'}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					}
-				}
 			case 'UpdateTournamentSeriesesShow':
 				if (_p0._0.ctor === 'Ok') {
 					return {

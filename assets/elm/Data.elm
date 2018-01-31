@@ -26,8 +26,6 @@ type Msg
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
-    | Nada String
-    | NewStuff (Result Http.Error (List String))
     | SetHalfPercents String
     | SetRate String
     | SetStakerId String
@@ -37,7 +35,6 @@ type Msg
     | SetNewTournamentSeriesCity String
     | SetNewTournamentSeriesName String
     | SetUserName String
-    | UpdateTournamentsShown (Result Http.Error (List Tournament))
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
 
