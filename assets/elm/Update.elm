@@ -11,6 +11,12 @@ update msg model =
         CreateNewStakingContract tournamentId ->
             ( model, createNewStakingContract model tournamentId )
 
+        SetFormData (SettUser Nome) nome ->
+            ( { model | userName = nome }, Cmd.none )
+
+        SetFormData (SettUser Email) email ->
+            ( { model | email = email }, Cmd.none )
+
         SetHalfPercents halfPercentsSold ->
             case (String.toInt halfPercentsSold) of
                 Ok percent ->

@@ -7,6 +7,8 @@ type alias Model =
     { userName : String
     , userId : String
     , email : String
+
+    --, formData : FormData
     , halfPercentsSold : Int
     , newTournamentName : String
     , newTournamentFeeInCents : Int
@@ -21,11 +23,31 @@ type alias Model =
     }
 
 
+type alias FormData =
+    { user : UserData }
+
+
+type alias UserData =
+    { name : Maybe String
+    , email : Maybe String
+    }
+
+
+type Specifics
+    = SettUser UserShit
+
+
+type UserShit
+    = Nome
+    | Email
+
+
 type Msg
     = CreateNewStakingContract TournamentId
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
+    | SetFormData Specifics String
     | SetHalfPercents String
     | SetRate String
     | SetStakerId String

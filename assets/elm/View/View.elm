@@ -84,7 +84,7 @@ newUser =
                 [ text "User name"
                 , input
                     [ name "user-name"
-                    , onInput <| SetUserName
+                    , onInput <| SetFormData (SettUser Nome)
                     ]
                     []
                 ]
@@ -92,7 +92,7 @@ newUser =
                 [ text "Email"
                 , input
                     [ name "email"
-                    , onInput <| SetEmail
+                    , onInput <| SetFormData (SettUser Email)
                     ]
                     []
                 ]
