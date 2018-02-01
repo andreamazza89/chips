@@ -11,7 +11,7 @@ createTournamentSeries model =
     Http.send UpdateTournamentSeriesesShow <|
         Http.post
             "http://localhost:4000/api"
-            (newTournamentSeriesRequestBody model.newTournamentSeriesCity model.newTournamentSeriesName)
+            (newTournamentSeriesRequestBody model.formData.tournamentSeries.city model.formData.tournamentSeries.name)
             yetAnotherDecoder
 
 

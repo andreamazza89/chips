@@ -26,7 +26,7 @@ newSeries =
                 [ text "city"
                 , input
                     [ name "city"
-                    , onInput <| SetNewTournamentSeriesCity
+                    , onInput <| SetFormData (SettTournamentSeries City)
                     ]
                     []
                 ]
@@ -34,7 +34,7 @@ newSeries =
                 [ text "name"
                 , input
                     [ name "name"
-                    , onInput <| SetNewTournamentSeriesName
+                    , onInput <| SetFormData (SettTournamentSeries SeriesName)
                     ]
                     []
                 ]
@@ -119,7 +119,7 @@ newTournament series =
                 [ text "name"
                 , input
                     [ name "name"
-                    , onInput <| SetFormData (SettTournament Name)
+                    , onInput <| SetFormData (SettTournament TournamentName)
                     ]
                     []
                 ]

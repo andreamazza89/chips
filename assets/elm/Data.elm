@@ -6,8 +6,6 @@ import Http exposing (..)
 type alias Model =
     { userId : String
     , formData : FormData
-    , newTournamentSeriesCity : String
-    , newTournamentSeriesName : String
     , stuff : String
     , tournamentSerieses : List TournamentSeries
     , users : List User
@@ -17,6 +15,7 @@ type alias Model =
 type alias FormData =
     { user : UserData
     , tournament : TournamentData
+    , tournamentSeries : TournamentSeriesData
     , stakingContract : StakingContractData
     }
 
@@ -40,9 +39,16 @@ type alias StakingContractData =
     }
 
 
+type alias TournamentSeriesData =
+    { city : String
+    , name : String
+    }
+
+
 type Specifics
     = SettUser UserFormData
     | SettTournament TournamentFormData
+    | SettTournamentSeries TournamentSeriesFormData
     | SettStakingContract StakingContractFormData
 
 
@@ -52,8 +58,13 @@ type UserFormData
 
 
 type TournamentFormData
-    = Name
+    = TournamentName
     | FeeInCents
+
+
+type TournamentSeriesFormData
+    = City
+    | SeriesName
 
 
 type StakingContractFormData
@@ -68,8 +79,6 @@ type Msg
     | CreateNewTournamentSeries
     | CreateNewUser
     | SetFormData Specifics String
-    | SetNewTournamentSeriesCity String
-    | SetNewTournamentSeriesName String
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
 

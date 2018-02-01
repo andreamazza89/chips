@@ -22,8 +22,6 @@ initialState : Model
 initialState =
     { userId = "1"
     , formData = initialFormData
-    , newTournamentSeriesCity = ""
-    , newTournamentSeriesName = ""
     , stuff = "errors go here"
     , tournamentSerieses = []
     , users = []
@@ -34,5 +32,6 @@ initialFormData : FormData
 initialFormData =
     { user = { name = "", email = "" }
     , tournament = { name = "", feeInCents = 0 }
+    , tournamentSeries = { city = "", name = "" }
     , stakingContract = { halfPercentsSold = 0, rate = 0, stakerId = "" }
     }

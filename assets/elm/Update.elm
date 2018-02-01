@@ -14,12 +14,6 @@ update msg model =
         SetFormData formSpecifics userInput ->
             handleFormInput model formSpecifics userInput
 
-        SetNewTournamentSeriesCity city ->
-            ( { model | newTournamentSeriesCity = city }, Cmd.none )
-
-        SetNewTournamentSeriesName name ->
-            ( { model | newTournamentSeriesName = name }, Cmd.none )
-
         CreateNewUser ->
             ( model, createUser model.formData.user.name model.formData.user.email )
 
@@ -83,7 +77,7 @@ handleFormInput model formSpecifics userInput =
             in
                 ( { model | formData = newFormData }, Cmd.none )
 
-        SettTournament Name ->
+        SettTournament TournamentName ->
             let
                 existingTournamentData =
                     model.formData.tournament
@@ -119,6 +113,38 @@ handleFormInput model formSpecifics userInput =
 
                 Err message ->
                     ( { model | stuff = message }, Cmd.none )
+
+        SettTournamentSeries City ->
+            let
+                existingTournamentSeriesData =
+                    model.formData.tournamentSeries
+
+                newTournamentSeriesData =
+                    { existingTournamentSeriesData | city = userInput }
+
+                existingFormData =
+                    model.formData
+
+                newFormData =
+                    { existingFormData | tournamentSeries = newTournamentSeriesData }
+            in
+                ( { model | formData = newFormData }, Cmd.none )
+
+        SettTournamentSeries SeriesName ->
+            let
+                existingTournamentSeriesData =
+                    model.formData.tournamentSeries
+
+                newTournamentSeriesData =
+                    { existingTournamentSeriesData | name = userInput }
+
+                existingFormData =
+                    model.formData
+
+                newFormData =
+                    { existingFormData | tournamentSeries = newTournamentSeriesData }
+            in
+                ( { model | formData = newFormData }, Cmd.none )
 
         SettStakingContract HalfPercentsSold ->
             case (String.toInt userInput) of
