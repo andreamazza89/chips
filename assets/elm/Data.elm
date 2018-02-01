@@ -4,10 +4,10 @@ import Http exposing (..)
 
 
 type alias Model =
-    { userId : String
-    , formData : FormData
+    { formData : FormData
     , stuff : String
     , tournamentSerieses : List TournamentSeries
+    , userId : String
     , users : List User
     }
 
@@ -21,14 +21,14 @@ type alias FormData =
 
 
 type alias UserData =
-    { name : String
-    , email : String
+    { email : String
+    , name : String
     }
 
 
 type alias TournamentData =
-    { name : String
-    , feeInCents : Int
+    { feeInCents : Int
+    , name : String
     }
 
 
@@ -45,6 +45,16 @@ type alias TournamentSeriesData =
     }
 
 
+type Msg
+    = CreateNewStakingContract TournamentId
+    | CreateNewTournament SeriesId
+    | CreateNewTournamentSeries
+    | CreateNewUser
+    | SetFormData Specifics String
+    | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
+    | UpdateUsersShown (Result Http.Error (List User))
+
+
 type Specifics
     = SettUser UserFormData
     | SettTournament TournamentFormData
@@ -53,13 +63,13 @@ type Specifics
 
 
 type UserFormData
-    = Nome
-    | Email
+    = Email
+    | Nome
 
 
 type TournamentFormData
-    = TournamentName
-    | FeeInCents
+    = FeeInCents
+    | TournamentName
 
 
 type TournamentSeriesFormData
@@ -71,16 +81,6 @@ type StakingContractFormData
     = HalfPercentsSold
     | Rate
     | StakerId
-
-
-type Msg
-    = CreateNewStakingContract TournamentId
-    | CreateNewTournament SeriesId
-    | CreateNewTournamentSeries
-    | CreateNewUser
-    | SetFormData Specifics String
-    | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
-    | UpdateUsersShown (Result Http.Error (List User))
 
 
 type alias StakingContract =
