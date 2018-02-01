@@ -16,46 +16,6 @@ view model =
         ]
 
 
-newSeries : Html Msg
-newSeries =
-    div [ class "new-series-container" ]
-        [ text "Create new tournament series"
-        , Html.form
-            [ onSubmit (CreateNewTournamentSeries) ]
-            [ label []
-                [ text "city"
-                , input
-                    [ name "city"
-                    , onInput <| SetFormData (SettTournamentSeries City)
-                    ]
-                    []
-                ]
-            , label []
-                [ text "name"
-                , input
-                    [ name "name"
-                    , onInput <| SetFormData (SettTournamentSeries SeriesName)
-                    ]
-                    []
-                ]
-            , button [] [ text "submit" ]
-            ]
-        ]
-
-
-allSerieses : Model -> Html Msg
-allSerieses model =
-    div [] (List.map viewSeries model.tournamentSerieses)
-
-
-viewSeries : TournamentSeries -> Html Msg
-viewSeries series =
-    div [ class "tournament-series" ]
-        [ h3 [] [ text series.name ]
-        , viewTournaments series
-        ]
-
-
 users : Model -> Html Msg
 users model =
     div [ class "users-container" ]
@@ -98,6 +58,46 @@ newUser =
                 ]
             , button [] [ text "submit" ]
             ]
+        ]
+
+
+newSeries : Html Msg
+newSeries =
+    div [ class "new-series-container" ]
+        [ text "Create new tournament series"
+        , Html.form
+            [ onSubmit (CreateNewTournamentSeries) ]
+            [ label []
+                [ text "city"
+                , input
+                    [ name "city"
+                    , onInput <| SetFormData (SettTournamentSeries City)
+                    ]
+                    []
+                ]
+            , label []
+                [ text "name"
+                , input
+                    [ name "name"
+                    , onInput <| SetFormData (SettTournamentSeries SeriesName)
+                    ]
+                    []
+                ]
+            , button [] [ text "submit" ]
+            ]
+        ]
+
+
+allSerieses : Model -> Html Msg
+allSerieses model =
+    div [] (List.map viewSeries model.tournamentSerieses)
+
+
+viewSeries : TournamentSeries -> Html Msg
+viewSeries series =
+    div [ class "tournament-series" ]
+        [ h3 [] [ text series.name ]
+        , viewTournaments series
         ]
 
 

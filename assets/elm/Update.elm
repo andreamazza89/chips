@@ -8,14 +8,11 @@ import Queries exposing (..)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        CreateNewStakingContract tournamentId ->
-            ( model, createNewStakingContract model tournamentId )
-
-        SetFormData formSpecifics userInput ->
-            handleFormInput model formSpecifics userInput
-
         CreateNewUser ->
             ( model, createUser model.formData.user.name model.formData.user.email )
+
+        CreateNewStakingContract tournamentId ->
+            ( model, createNewStakingContract model tournamentId )
 
         CreateNewTournament seriesId ->
             ( model, createTournament model seriesId )
@@ -23,22 +20,39 @@ update msg model =
         CreateNewTournamentSeries ->
             ( model, createTournamentSeries model )
 
-        UpdateTournamentSeriesesShow (Ok serieses) ->
+        SetFormData formSpecifics userInput ->
+            handleFormInput model formSpecifics userInput
+
+        UpdateTournamentSeriesesShow result ->
+            updateTournamentSeriesesShown model result
+
+        UpdateUsersShown result ->
+            updateUsersShown model result
+
+
+updateTournamentSeriesesShown : Model -> Result Http.Error (List TournamentSeries) -> ( Model, Cmd Msg )
+updateTournamentSeriesesShown model result =
+    case result of
+        Ok serieses ->
             ( { model | tournamentSerieses = serieses }, Cmd.none )
 
-        UpdateTournamentSeriesesShow (Err (BadPayload message response)) ->
+        Err (BadPayload message response) ->
             ( { model | stuff = message }, Cmd.none )
 
-        UpdateTournamentSeriesesShow (Err _) ->
+        Err _ ->
             ( { model | stuff = "error fetching tournaments" }, Cmd.none )
 
-        UpdateUsersShown (Ok newUsers) ->
+
+updateUsersShown : Model -> Result Http.Error (List User) -> ( Model, Cmd Msg )
+updateUsersShown model result =
+    case result of
+        Ok newUsers ->
             ( { model | users = newUsers }, Cmd.none )
 
-        UpdateUsersShown (Err (BadPayload message response)) ->
+        Err (BadPayload message response) ->
             ( { model | stuff = message }, Cmd.none )
 
-        UpdateUsersShown (Err _) ->
+        Err _ ->
             ( { model | stuff = "error fetching users" }, Cmd.none )
 
 
