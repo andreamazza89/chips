@@ -176,7 +176,7 @@ newStakerForm tournament =
                 [ text "Staker id"
                 , input
                     [ name "staker-id"
-                    , onInput <| SetStakerId
+                    , onInput <| SetFormData (SettStakingContract StakerId)
                     ]
                     []
                 ]
@@ -184,7 +184,7 @@ newStakerForm tournament =
                 [ text "half percents sold"
                 , input
                     [ name "half-percents-sold"
-                    , onInput <| SetHalfPercents
+                    , onInput <| SetFormData (SettStakingContract HalfPercentsSold)
                     ]
                     []
                 ]
@@ -192,7 +192,7 @@ newStakerForm tournament =
                 [ text "rate"
                 , input
                     [ name "rate"
-                    , onInput <| SetRate
+                    , onInput <| SetFormData (SettStakingContract Rate)
                     ]
                     []
                 ]

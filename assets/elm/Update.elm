@@ -14,30 +14,11 @@ update msg model =
         SetFormData formSpecifics userInput ->
             handleFormInput model formSpecifics userInput
 
-        SetHalfPercents halfPercentsSold ->
-            case (String.toInt halfPercentsSold) of
-                Ok percent ->
-                    ( { model | halfPercentsSold = percent }, Cmd.none )
-
-                Err message ->
-                    ( { model | stuff = message }, Cmd.none )
-
         SetNewTournamentSeriesCity city ->
             ( { model | newTournamentSeriesCity = city }, Cmd.none )
 
         SetNewTournamentSeriesName name ->
             ( { model | newTournamentSeriesName = name }, Cmd.none )
-
-        SetRate rate ->
-            case (String.toFloat rate) of
-                Ok rate ->
-                    ( { model | rate = rate }, Cmd.none )
-
-                Err message ->
-                    ( { model | stuff = message }, Cmd.none )
-
-        SetStakerId stakerId ->
-            ( { model | stakerId = stakerId }, Cmd.none )
 
         CreateNewUser ->
             ( model, createUser model.formData.user.name model.formData.user.email )
@@ -138,3 +119,61 @@ handleFormInput model formSpecifics userInput =
 
                 Err message ->
                     ( { model | stuff = message }, Cmd.none )
+
+        SettStakingContract HalfPercentsSold ->
+            case (String.toInt userInput) of
+                Ok percentSold ->
+                    let
+                        existingStakingContractData =
+                            model.formData.stakingContract
+
+                        newStakingContractData =
+                            { existingStakingContractData | halfPercentsSold = percentSold }
+
+                        existingFormData =
+                            model.formData
+
+                        newFormData =
+                            { existingFormData | stakingContract = newStakingContractData }
+                    in
+                        ( { model | formData = newFormData }, Cmd.none )
+
+                Err message ->
+                    ( { model | stuff = message }, Cmd.none )
+
+        SettStakingContract Rate ->
+            case (String.toFloat userInput) of
+                Ok rate ->
+                    let
+                        existingStakingContractData =
+                            model.formData.stakingContract
+
+                        newStakingContractData =
+                            { existingStakingContractData | rate = rate }
+
+                        existingFormData =
+                            model.formData
+
+                        newFormData =
+                            { existingFormData | stakingContract = newStakingContractData }
+                    in
+                        ( { model | formData = newFormData }, Cmd.none )
+
+                Err message ->
+                    ( { model | stuff = message }, Cmd.none )
+
+        SettStakingContract StakerId ->
+            let
+                existingStakingContractData =
+                    model.formData.stakingContract
+
+                newStakingContractData =
+                    { existingStakingContractData | stakerId = userInput }
+
+                existingFormData =
+                    model.formData
+
+                newFormData =
+                    { existingFormData | stakingContract = newStakingContractData }
+            in
+                ( { model | formData = newFormData }, Cmd.none )

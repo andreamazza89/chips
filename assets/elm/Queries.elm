@@ -46,7 +46,13 @@ createNewStakingContract model tournamentId =
     Http.send UpdateTournamentSeriesesShow <|
         Http.post
             "http://localhost:4000/api"
-            (newStakeContractRequestBody model.stakerId model.halfPercentsSold model.userId model.rate tournamentId)
+            (newStakeContractRequestBody
+                model.formData.stakingContract.stakerId
+                model.formData.stakingContract.halfPercentsSold
+                model.userId
+                model.formData.stakingContract.rate
+                tournamentId
+            )
             tournamentMutationDecoder
 
 
