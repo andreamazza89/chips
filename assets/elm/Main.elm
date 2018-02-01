@@ -23,6 +23,7 @@ initialState =
     { userName = ""
     , userId = "1"
     , email = ""
+    , formData = initialFormData
     , halfPercentsSold = 0
     , newTournamentName = ""
     , newTournamentFeeInCents = 0
@@ -35,3 +36,8 @@ initialState =
     , tournamentSerieses = []
     , users = []
     }
+
+
+initialFormData : FormData
+initialFormData =
+    { user = { name = "", email = "" } }

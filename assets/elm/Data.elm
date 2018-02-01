@@ -7,8 +7,7 @@ type alias Model =
     { userName : String
     , userId : String
     , email : String
-
-    --, formData : FormData
+    , formData : FormData
     , halfPercentsSold : Int
     , newTournamentName : String
     , newTournamentFeeInCents : Int
@@ -28,8 +27,8 @@ type alias FormData =
 
 
 type alias UserData =
-    { name : Maybe String
-    , email : Maybe String
+    { name : String
+    , email : String
     }
 
 
@@ -51,12 +50,10 @@ type Msg
     | SetHalfPercents String
     | SetRate String
     | SetStakerId String
-    | SetEmail String
     | SetNewTournamentName String
     | SetNewTournamentFeeInCents String
     | SetNewTournamentSeriesCity String
     | SetNewTournamentSeriesName String
-    | SetUserName String
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
 

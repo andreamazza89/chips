@@ -11,11 +11,8 @@ update msg model =
         CreateNewStakingContract tournamentId ->
             ( model, createNewStakingContract model tournamentId )
 
-        SetFormData (SettUser Nome) nome ->
-            ( { model | userName = nome }, Cmd.none )
-
-        SetFormData (SettUser Email) email ->
-            ( { model | email = email }, Cmd.none )
+        SetFormData formSpecifics userInput ->
+            handleFormInput model formSpecifics userInput
 
         SetHalfPercents halfPercentsSold ->
             case (String.toInt halfPercentsSold) of
@@ -24,12 +21,6 @@ update msg model =
 
                 Err message ->
                     ( { model | stuff = message }, Cmd.none )
-
-        SetUserName userName ->
-            ( { model | userName = userName }, Cmd.none )
-
-        SetEmail email ->
-            ( { model | email = email }, Cmd.none )
 
         SetNewTournamentName name ->
             ( { model | newTournamentName = name }, Cmd.none )
@@ -60,7 +51,7 @@ update msg model =
             ( { model | stakerId = stakerId }, Cmd.none )
 
         CreateNewUser ->
-            ( model, createUser model.userName model.email )
+            ( model, createUser model.formData.user.name model.formData.user.email )
 
         CreateNewTournament seriesId ->
             ( model, createTournament model seriesId )
@@ -85,3 +76,39 @@ update msg model =
 
         UpdateUsersShown (Err _) ->
             ( { model | stuff = "error fetching users" }, Cmd.none )
+
+
+handleFormInput : Model -> Specifics -> String -> ( Model, Cmd Msg )
+handleFormInput model formSpecifics userInput =
+    case formSpecifics of
+        SettUser Nome ->
+            let
+                existingUserData =
+                    model.formData.user
+
+                newUserData =
+                    { existingUserData | name = userInput }
+
+                existingFormData =
+                    model.formData
+
+                newFormData =
+                    { existingFormData | user = newUserData }
+            in
+                ( { model | formData = newFormData }, Cmd.none )
+
+        SettUser Email ->
+            let
+                existingUserData =
+                    model.formData.user
+
+                newUserData =
+                    { existingUserData | email = userInput }
+
+                existingFormData =
+                    model.formData
+
+                newFormData =
+                    { existingFormData | user = newUserData }
+            in
+                ( { model | formData = newFormData }, Cmd.none )
