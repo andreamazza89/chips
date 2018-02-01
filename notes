@@ -31,9 +31,9 @@ actually exist in the database; how to do that? --- assoc_constraint maybe?
 
 - add uniqueness constraint of email, and all other constraints necessary
 
-- maybe remove many to many join table users_tournaments.
-
 - maybe remove timestamps()?
+
+- host address not hardcoded
 
 - update tournament table to have an entry cost/fee, maybe No of entries, any other data?
 
