@@ -119,7 +119,7 @@ newTournament series =
                 [ text "name"
                 , input
                     [ name "name"
-                    , onInput <| SetNewTournamentName
+                    , onInput <| SetFormData (SettTournament Name)
                     ]
                     []
                 ]
@@ -127,7 +127,7 @@ newTournament series =
                 [ text "fee in cents"
                 , input
                     [ name "fee in cents"
-                    , onInput <| SetNewTournamentFeeInCents
+                    , onInput <| SetFormData (SettTournament FeeInCents)
                     ]
                     []
                 ]

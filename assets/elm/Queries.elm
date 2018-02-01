@@ -80,7 +80,7 @@ createTournament model seriesId =
     Http.send UpdateTournamentSeriesesShow <|
         Http.post
             "http://localhost:4000/api"
-            (newTournamentRequestBody model.newTournamentName model.newTournamentFeeInCents seriesId)
+            (newTournamentRequestBody model.formData.tournament.name model.formData.tournament.feeInCents seriesId)
             seriesMutationDecoder
 
 

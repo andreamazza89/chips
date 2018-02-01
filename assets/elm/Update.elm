@@ -22,17 +22,6 @@ update msg model =
                 Err message ->
                     ( { model | stuff = message }, Cmd.none )
 
-        SetNewTournamentName name ->
-            ( { model | newTournamentName = name }, Cmd.none )
-
-        SetNewTournamentFeeInCents fee ->
-            case (String.toInt fee) of
-                Ok parsedFee ->
-                    ( { model | newTournamentFeeInCents = parsedFee }, Cmd.none )
-
-                Err message ->
-                    ( { model | stuff = message }, Cmd.none )
-
         SetNewTournamentSeriesCity city ->
             ( { model | newTournamentSeriesCity = city }, Cmd.none )
 
@@ -112,3 +101,40 @@ handleFormInput model formSpecifics userInput =
                     { existingFormData | user = newUserData }
             in
                 ( { model | formData = newFormData }, Cmd.none )
+
+        SettTournament Name ->
+            let
+                existingTournamentData =
+                    model.formData.tournament
+
+                newTournamentData =
+                    { existingTournamentData | name = userInput }
+
+                existingFormData =
+                    model.formData
+
+                newFormData =
+                    { existingFormData | tournament = newTournamentData }
+            in
+                ( { model | formData = newFormData }, Cmd.none )
+
+        SettTournament FeeInCents ->
+            case (String.toInt userInput) of
+                Ok fee ->
+                    let
+                        existingTournamentData =
+                            model.formData.tournament
+
+                        newTournamentData =
+                            { existingTournamentData | feeInCents = fee }
+
+                        existingFormData =
+                            model.formData
+
+                        newFormData =
+                            { existingFormData | tournament = newTournamentData }
+                    in
+                        ( { model | formData = newFormData }, Cmd.none )
+
+                Err message ->
+                    ( { model | stuff = message }, Cmd.none )

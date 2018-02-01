@@ -20,19 +20,14 @@ main =
 
 initialState : Model
 initialState =
-    { userName = ""
-    , userId = "1"
-    , email = ""
+    { userId = "1"
     , formData = initialFormData
     , halfPercentsSold = 0
-    , newTournamentName = ""
-    , newTournamentFeeInCents = 0
     , newTournamentSeriesCity = ""
     , newTournamentSeriesName = ""
     , rate = 0
     , stakerId = "0"
     , stuff = "errors go here"
-    , tournaments = []
     , tournamentSerieses = []
     , users = []
     }
@@ -40,4 +35,6 @@ initialState =
 
 initialFormData : FormData
 initialFormData =
-    { user = { name = "", email = "" } }
+    { user = { name = "", email = "" }
+    , tournament = { name = "", feeInCents = 0 }
+    }
