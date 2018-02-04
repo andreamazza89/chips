@@ -18,11 +18,12 @@
   - better model (forms with maybes)
   - decoders
   - graphql queries
-  - add tests
+  - add tests?
 
+- add tournament result for player -- results table, with prize, player_id, tournament_id
 - add cost field to staking contract (automatically generated?)
-
 - add winnings field to staking contract
+- change percents sold to float
 
 - add stake_paid and winnings_paid to staking contract
 
