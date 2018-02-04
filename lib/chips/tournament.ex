@@ -11,6 +11,7 @@ defmodule Chips.Tournament do
 
     belongs_to :tournament_series, Chips.TournamentSeries
     has_many :staking_contracts, Chips.StakingContract
+    has_many :results, Chips.Result
 
     timestamps()
   end
