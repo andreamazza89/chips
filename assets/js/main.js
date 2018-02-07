@@ -9072,9 +9072,9 @@ var _user$project$Data$TournamentSeries = F4(
 	function (a, b, c, d) {
 		return {city: a, id: b, name: c, tournaments: d};
 	});
-var _user$project$Data$Tournament = F3(
-	function (a, b, c) {
-		return {name: a, id: b, stakingContracts: c};
+var _user$project$Data$Tournament = F4(
+	function (a, b, c, d) {
+		return {name: a, id: b, result: c, stakingContracts: d};
 	});
 var _user$project$Data$UpdateUsersShown = function (a) {
 	return {ctor: 'UpdateUsersShown', _0: a};
@@ -9116,6 +9116,32 @@ var _user$project$Data$StakerId = {ctor: 'StakerId'};
 var _user$project$Data$Rate = {ctor: 'Rate'};
 var _user$project$Data$HalfPercentsSold = {ctor: 'HalfPercentsSold'};
 
+var _user$project$View_View$viewTournamentResult = function (result) {
+	var _p0 = result;
+	if (_p0.ctor === 'Just') {
+		return A2(
+			_elm_lang$html$Html$h4,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'you won ',
+						_elm_lang$core$Basics$toString(_p0._0))),
+				_1: {ctor: '[]'}
+			});
+	} else {
+		return A2(
+			_elm_lang$html$Html$h4,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('result form will be here'),
+				_1: {ctor: '[]'}
+			});
+	}
+};
 var _user$project$View_View$newStakerForm = function (tournament) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -9295,11 +9321,15 @@ var _user$project$View_View$viewTournament = function (tournament) {
 					_0: _user$project$View_View$newStakingContract(tournament),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$br,
-							{ctor: '[]'},
-							{ctor: '[]'}),
-						_1: {ctor: '[]'}
+						_0: _user$project$View_View$viewTournamentResult(tournament.result),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$br,
+								{ctor: '[]'},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -9709,11 +9739,15 @@ var _user$project$Queries$stakingContractDecoder = A4(
 	A2(_elm_lang$core$Json_Decode$field, 'rate', _elm_lang$core$Json_Decode$float),
 	A2(_elm_lang$core$Json_Decode$field, 'staker', _user$project$Queries$stakerDecoder),
 	A2(_elm_lang$core$Json_Decode$field, 'halfPercentsSold', _elm_lang$core$Json_Decode$int));
-var _user$project$Queries$tournamentDecoder = A4(
-	_elm_lang$core$Json_Decode$map3,
+var _user$project$Queries$tournamentDecoder = A5(
+	_elm_lang$core$Json_Decode$map4,
 	_user$project$Data$Tournament,
 	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'result',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int)),
 	A2(
 		_elm_lang$core$Json_Decode$field,
 		'stakingContracts',
@@ -9795,7 +9829,7 @@ var _user$project$Queries$tournamentSeriesesRequestBody = _elm_lang$http$Http$js
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'id,',
-								A2(_elm_lang$core$Basics_ops['++'], 'name,', ' tournaments { name, id, stakingContracts { staker { name }, rate, halfPercentsSold } } } }')))))
+								A2(_elm_lang$core$Basics_ops['++'], 'name,', ' tournaments { name, id, result, stakingContracts { staker { name }, rate, halfPercentsSold } } } }')))))
 			},
 			_1: {ctor: '[]'}
 		}));
@@ -9863,7 +9897,7 @@ var _user$project$Queries$newTournamentRequestBody = F3(
 													A2(
 														_elm_lang$core$Basics_ops['++'],
 														'\")',
-														A2(_elm_lang$core$Basics_ops['++'], '{ id, name, city, tournaments {id, name, stakingContracts { halfPercentsSold, staker { name }, rate }} }', '}')))))))))
+														A2(_elm_lang$core$Basics_ops['++'], '{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }', '}')))))))))
 					},
 					_1: {ctor: '[]'}
 				}));
@@ -9925,7 +9959,7 @@ var _user$project$Queries$newStakeContractRequestBody = F5(
 																	A2(
 																		_elm_lang$core$Basics_ops['++'],
 																		')',
-																		A2(_elm_lang$core$Basics_ops['++'], '{ id, name, city, tournaments {id, name, stakingContracts { halfPercentsSold, staker { name }, rate }} }', '}')))))))))))))
+																		A2(_elm_lang$core$Basics_ops['++'], '{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }', '}')))))))))))))
 					},
 					_1: {ctor: '[]'}
 				}));
@@ -9969,7 +10003,7 @@ var _user$project$Queries$newTournamentSeriesRequestBody = F2(
 											A2(
 												_elm_lang$core$Basics_ops['++'],
 												'\")',
-												A2(_elm_lang$core$Basics_ops['++'], '{ id, name, city, tournaments {id, name, stakingContracts { halfPercentsSold, staker { name }, rate }} }', '}')))))))
+												A2(_elm_lang$core$Basics_ops['++'], '{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }', '}')))))))
 					},
 					_1: {ctor: '[]'}
 				}));

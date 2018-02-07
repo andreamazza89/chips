@@ -142,6 +142,7 @@ viewTournament tournament =
         [ h4 [] [ text tournament.name ]
         , ul [] (List.map viewStakingContract tournament.stakingContracts)
         , newStakingContract tournament
+        , viewTournamentResult tournament.result
         , br [] []
         ]
 
@@ -199,3 +200,13 @@ newStakerForm tournament =
             , button [] [ text "submit" ]
             ]
         ]
+
+
+viewTournamentResult : Maybe Int -> Html Msg
+viewTournamentResult result =
+    case result of
+        Just prize ->
+            h4 [] [ text ("you won " ++ toString (prize)) ]
+
+        Nothing ->
+            h4 [] [ text "result form will be here" ]
