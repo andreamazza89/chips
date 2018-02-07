@@ -23,6 +23,7 @@ defmodule ChipsWeb.Schema.Types do
     field :id, :id
     field :city, :string
     field :name, :string
+    field :result, :integer
     field :starts, :naive_datetime
 
     field :staking_contracts, list_of(:staking_contract)

@@ -4,7 +4,7 @@ defmodule Chips.AccessData do
 
   def list_tournament_serieses do
     Repo.all(TournamentSeries)
-    |> Repo.preload(tournaments: [staking_contracts: [:staker]])
+    |> Repo.preload(tournaments: [:results, staking_contracts: [:staker]])
   end
 
   def list_tournaments do

@@ -1,9 +1,10 @@
 defmodule ChipsWeb.Resolvers.Data do
 
   import Chips.AccessData
+  import Chips.ProcessData
 
   def list_tournament_serieses(_parent, _args, _resolution) do
-    {:ok, list_tournament_serieses()}
+    {:ok, list_tournament_serieses() |> add_result_to_tournaments}
   end
 
   def list_tournaments(_parent, _args, _resolution) do
