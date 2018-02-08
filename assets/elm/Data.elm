@@ -13,11 +13,16 @@ type alias Model =
 
 
 type alias FormData =
-    { user : UserData
+    { result : ResultData
+    , stakingContract : StakingContractData
     , tournament : TournamentData
     , tournamentSeries : TournamentSeriesData
-    , stakingContract : StakingContractData
+    , user : UserData
     }
+
+
+type alias ResultData =
+    { prize : Int }
 
 
 type alias UserData =
@@ -46,7 +51,8 @@ type alias TournamentSeriesData =
 
 
 type Msg
-    = CreateNewStakingContract TournamentId
+    = CreateNewResult TournamentId PlayerId
+    | CreateNewStakingContract TournamentId
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
@@ -56,10 +62,15 @@ type Msg
 
 
 type Specifics
-    = SettUser UserFormData
+    = SettResult ResultFormData
+    | SettStakingContract StakingContractFormData
     | SettTournament TournamentFormData
     | SettTournamentSeries TournamentSeriesFormData
-    | SettStakingContract StakingContractFormData
+    | SettUser UserFormData
+
+
+type ResultFormData
+    = Prize
 
 
 type UserFormData
@@ -121,4 +132,8 @@ type alias Tournament =
 
 
 type alias TournamentId =
+    String
+
+
+type alias PlayerId =
     String

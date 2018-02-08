@@ -17,17 +17,17 @@ defmodule ChipsWeb.Resolvers.Data do
 
   def create_result(_parent, args, _resolution) do
     create_result(args)
-    {:ok, list_tournament_serieses()}
+    {:ok, list_tournament_serieses() |> add_result_to_tournaments}
   end
 
   def create_tournament_series(_parent, args, _resolution) do
     create_tournament_series(args)
-    {:ok, list_tournament_serieses()}
+    {:ok, list_tournament_serieses() |> add_result_to_tournaments}
   end
 
   def create_tournament(_parent, args, _resolution) do
     create_tournament(args)
-    {:ok, list_tournament_serieses()}
+    {:ok, list_tournament_serieses() |> add_result_to_tournaments}
   end
 
   def create_user(_parent, args, _resolution) do
@@ -37,7 +37,7 @@ defmodule ChipsWeb.Resolvers.Data do
 
   def create_staking_contract(_parent, args, _resolution) do
     create_staking_contract(args)
-    {:ok, list_tournament_serieses()}
+    {:ok, list_tournament_serieses() |> add_result_to_tournaments}
   end
 
 end

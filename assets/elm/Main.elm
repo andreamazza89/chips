@@ -30,8 +30,9 @@ initialState =
 
 initialFormData : FormData
 initialFormData =
-    { user = { name = "", email = "" }
+    { result = { prize = 0 }
+    , stakingContract = { halfPercentsSold = 0, rate = 0, stakerId = "" }
     , tournament = { name = "", feeInCents = 0 }
     , tournamentSeries = { city = "", name = "" }
-    , stakingContract = { halfPercentsSold = 0, rate = 0, stakerId = "" }
+    , user = { name = "", email = "" }
     }

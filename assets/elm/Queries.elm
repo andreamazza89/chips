@@ -6,6 +6,37 @@ import Json.Encode exposing (encode, object)
 import Data exposing (..)
 
 
+createResult : Model -> TournamentId -> PlayerId -> Cmd Msg
+createResult model tournamentId playerId =
+    Http.send UpdateTournamentSeriesesShow <|
+        Http.post
+            "http://localhost:4000/api"
+            (newResultRequestBody model.formData.result.prize tournamentId playerId)
+            (graphQlDecoder "createResult" (list tournamentSeriesDecoder))
+
+
+newResultRequestBody : Int -> TournamentId -> PlayerId -> Body
+newResultRequestBody prize tournamentId playerId =
+    Http.jsonBody
+        (Json.Encode.object
+            [ ( "query"
+              , Json.Encode.string
+                    ("mutation { createResult(prize: "
+                        ++ toString (prize)
+                        ++ ", tournamentId: \""
+                        ++ tournamentId
+                        ++ "\""
+                        ++ ", playerId: \""
+                        ++ playerId
+                        ++ "\")"
+                        ++ "{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "}"
+                    )
+              )
+            ]
+        )
+
+
 createTournamentSeries : Model -> Cmd Msg
 createTournamentSeries model =
     Http.send UpdateTournamentSeriesesShow <|

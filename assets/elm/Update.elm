@@ -11,6 +11,9 @@ update msg model =
         CreateNewUser ->
             ( model, createUser model.formData.user.name model.formData.user.email )
 
+        CreateNewResult tournamentId playerId ->
+            ( model, createResult model tournamentId playerId )
+
         CreateNewStakingContract tournamentId ->
             ( model, createNewStakingContract model tournamentId )
 
@@ -59,6 +62,27 @@ updateUsersShown model result =
 handleFormInput : Model -> Specifics -> String -> ( Model, Cmd Msg )
 handleFormInput model formSpecifics userInput =
     case formSpecifics of
+        SettResult Prize ->
+            case (String.toInt userInput) of
+                Ok parsedPrize ->
+                    let
+                        existingResultData =
+                            model.formData.result
+
+                        newTournamentData =
+                            { existingResultData | prize = parsedPrize }
+
+                        existingFormData =
+                            model.formData
+
+                        newFormData =
+                            { existingFormData | result = newTournamentData }
+                    in
+                        ( { model | formData = newFormData }, Cmd.none )
+
+                Err message ->
+                    ( { model | stuff = message }, Cmd.none )
+
         SettUser Nome ->
             let
                 existingUserData =

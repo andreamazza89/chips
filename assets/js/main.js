@@ -9037,10 +9037,13 @@ var _user$project$Data$Model = F5(
 	function (a, b, c, d, e) {
 		return {formData: a, stuff: b, tournamentSerieses: c, userId: d, users: e};
 	});
-var _user$project$Data$FormData = F4(
-	function (a, b, c, d) {
-		return {user: a, tournament: b, tournamentSeries: c, stakingContract: d};
+var _user$project$Data$FormData = F5(
+	function (a, b, c, d, e) {
+		return {result: a, stakingContract: b, tournament: c, tournamentSeries: d, user: e};
 	});
+var _user$project$Data$ResultData = function (a) {
+	return {prize: a};
+};
 var _user$project$Data$UserData = F2(
 	function (a, b) {
 		return {email: a, name: b};
@@ -9094,8 +9097,12 @@ var _user$project$Data$CreateNewTournament = function (a) {
 var _user$project$Data$CreateNewStakingContract = function (a) {
 	return {ctor: 'CreateNewStakingContract', _0: a};
 };
-var _user$project$Data$SettStakingContract = function (a) {
-	return {ctor: 'SettStakingContract', _0: a};
+var _user$project$Data$CreateNewResult = F2(
+	function (a, b) {
+		return {ctor: 'CreateNewResult', _0: a, _1: b};
+	});
+var _user$project$Data$SettUser = function (a) {
+	return {ctor: 'SettUser', _0: a};
 };
 var _user$project$Data$SettTournamentSeries = function (a) {
 	return {ctor: 'SettTournamentSeries', _0: a};
@@ -9103,9 +9110,13 @@ var _user$project$Data$SettTournamentSeries = function (a) {
 var _user$project$Data$SettTournament = function (a) {
 	return {ctor: 'SettTournament', _0: a};
 };
-var _user$project$Data$SettUser = function (a) {
-	return {ctor: 'SettUser', _0: a};
+var _user$project$Data$SettStakingContract = function (a) {
+	return {ctor: 'SettStakingContract', _0: a};
 };
+var _user$project$Data$SettResult = function (a) {
+	return {ctor: 'SettResult', _0: a};
+};
+var _user$project$Data$Prize = {ctor: 'Prize'};
 var _user$project$Data$Nome = {ctor: 'Nome'};
 var _user$project$Data$Email = {ctor: 'Email'};
 var _user$project$Data$TournamentName = {ctor: 'TournamentName'};
@@ -9116,8 +9127,8 @@ var _user$project$Data$StakerId = {ctor: 'StakerId'};
 var _user$project$Data$Rate = {ctor: 'Rate'};
 var _user$project$Data$HalfPercentsSold = {ctor: 'HalfPercentsSold'};
 
-var _user$project$View_View$viewTournamentResult = function (result) {
-	var _p0 = result;
+var _user$project$View_View$viewTournamentResult = function (tournament) {
+	var _p0 = tournament.result;
 	if (_p0.ctor === 'Just') {
 		return A2(
 			_elm_lang$html$Html$h4,
@@ -9133,11 +9144,58 @@ var _user$project$View_View$viewTournamentResult = function (result) {
 			});
 	} else {
 		return A2(
-			_elm_lang$html$Html$h4,
+			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('result form will be here'),
+				_0: A2(
+					_elm_lang$html$Html$form,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onSubmit(
+							A2(_user$project$Data$CreateNewResult, tournament.id, '1')),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$label,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('prize'),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$input,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$name('prize'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onInput(
+													_user$project$Data$SetFormData(
+														_user$project$Data$SettResult(_user$project$Data$Prize))),
+												_1: {ctor: '[]'}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('submit'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
 				_1: {ctor: '[]'}
 			});
 	}
@@ -9321,7 +9379,7 @@ var _user$project$View_View$viewTournament = function (tournament) {
 					_0: _user$project$View_View$newStakingContract(tournament),
 					_1: {
 						ctor: '::',
-						_0: _user$project$View_View$viewTournamentResult(tournament.result),
+						_0: _user$project$View_View$viewTournamentResult(tournament),
 						_1: {
 							ctor: '::',
 							_0: A2(
@@ -10021,11 +10079,91 @@ var _user$project$Queries$createTournamentSeries = function (model) {
 				'createTournamentSeries',
 				_elm_lang$core$Json_Decode$list(_user$project$Queries$tournamentSeriesDecoder))));
 };
+var _user$project$Queries$newResultRequestBody = F3(
+	function (prize, tournamentId, playerId) {
+		return _elm_lang$http$Http$jsonBody(
+			_elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'query',
+						_1: _elm_lang$core$Json_Encode$string(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'mutation { createResult(prize: ',
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(prize),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										', tournamentId: \"',
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											tournamentId,
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												'\"',
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													', playerId: \"',
+													A2(
+														_elm_lang$core$Basics_ops['++'],
+														playerId,
+														A2(
+															_elm_lang$core$Basics_ops['++'],
+															'\")',
+															A2(_elm_lang$core$Basics_ops['++'], '{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }', '}'))))))))))
+					},
+					_1: {ctor: '[]'}
+				}));
+	});
+var _user$project$Queries$createResult = F3(
+	function (model, tournamentId, playerId) {
+		return A2(
+			_elm_lang$http$Http$send,
+			_user$project$Data$UpdateTournamentSeriesesShow,
+			A3(
+				_elm_lang$http$Http$post,
+				'http://localhost:4000/api',
+				A3(_user$project$Queries$newResultRequestBody, model.formData.result.prize, tournamentId, playerId),
+				A2(
+					_user$project$Queries$graphQlDecoder,
+					'createResult',
+					_elm_lang$core$Json_Decode$list(_user$project$Queries$tournamentSeriesDecoder))));
+	});
 
 var _user$project$Update$handleFormInput = F3(
 	function (model, formSpecifics, userInput) {
 		var _p0 = formSpecifics;
 		switch (_p0.ctor) {
+			case 'SettResult':
+				var _p1 = _elm_lang$core$String$toInt(userInput);
+				if (_p1.ctor === 'Ok') {
+					var existingFormData = model.formData;
+					var existingResultData = model.formData.result;
+					var newTournamentData = _elm_lang$core$Native_Utils.update(
+						existingResultData,
+						{prize: _p1._0});
+					var newFormData = _elm_lang$core$Native_Utils.update(
+						existingFormData,
+						{result: newTournamentData});
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{formData: newFormData}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{stuff: _p1._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
 			case 'SettUser':
 				if (_p0._0.ctor === 'Nome') {
 					var existingFormData = model.formData;
@@ -10078,13 +10216,13 @@ var _user$project$Update$handleFormInput = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p1 = _elm_lang$core$String$toInt(userInput);
-					if (_p1.ctor === 'Ok') {
+					var _p2 = _elm_lang$core$String$toInt(userInput);
+					if (_p2.ctor === 'Ok') {
 						var existingFormData = model.formData;
 						var existingTournamentData = model.formData.tournament;
 						var newTournamentData = _elm_lang$core$Native_Utils.update(
 							existingTournamentData,
-							{feeInCents: _p1._0});
+							{feeInCents: _p2._0});
 						var newFormData = _elm_lang$core$Native_Utils.update(
 							existingFormData,
 							{tournament: newTournamentData});
@@ -10100,7 +10238,7 @@ var _user$project$Update$handleFormInput = F3(
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
-								{stuff: _p1._0}),
+								{stuff: _p2._0}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					}
@@ -10142,40 +10280,13 @@ var _user$project$Update$handleFormInput = F3(
 			default:
 				switch (_p0._0.ctor) {
 					case 'HalfPercentsSold':
-						var _p2 = _elm_lang$core$String$toInt(userInput);
-						if (_p2.ctor === 'Ok') {
-							var existingFormData = model.formData;
-							var existingStakingContractData = model.formData.stakingContract;
-							var newStakingContractData = _elm_lang$core$Native_Utils.update(
-								existingStakingContractData,
-								{halfPercentsSold: _p2._0});
-							var newFormData = _elm_lang$core$Native_Utils.update(
-								existingFormData,
-								{stakingContract: newStakingContractData});
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{formData: newFormData}),
-								_1: _elm_lang$core$Platform_Cmd$none
-							};
-						} else {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{stuff: _p2._0}),
-								_1: _elm_lang$core$Platform_Cmd$none
-							};
-						}
-					case 'Rate':
-						var _p3 = _elm_lang$core$String$toFloat(userInput);
+						var _p3 = _elm_lang$core$String$toInt(userInput);
 						if (_p3.ctor === 'Ok') {
 							var existingFormData = model.formData;
 							var existingStakingContractData = model.formData.stakingContract;
 							var newStakingContractData = _elm_lang$core$Native_Utils.update(
 								existingStakingContractData,
-								{rate: _p3._0});
+								{halfPercentsSold: _p3._0});
 							var newFormData = _elm_lang$core$Native_Utils.update(
 								existingFormData,
 								{stakingContract: newStakingContractData});
@@ -10192,6 +10303,33 @@ var _user$project$Update$handleFormInput = F3(
 								_0: _elm_lang$core$Native_Utils.update(
 									model,
 									{stuff: _p3._0}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						}
+					case 'Rate':
+						var _p4 = _elm_lang$core$String$toFloat(userInput);
+						if (_p4.ctor === 'Ok') {
+							var existingFormData = model.formData;
+							var existingStakingContractData = model.formData.stakingContract;
+							var newStakingContractData = _elm_lang$core$Native_Utils.update(
+								existingStakingContractData,
+								{rate: _p4._0});
+							var newFormData = _elm_lang$core$Native_Utils.update(
+								existingFormData,
+								{stakingContract: newStakingContractData});
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{formData: newFormData}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						} else {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{stuff: _p4._0}),
 								_1: _elm_lang$core$Platform_Cmd$none
 							};
 						}
@@ -10216,44 +10354,13 @@ var _user$project$Update$handleFormInput = F3(
 	});
 var _user$project$Update$updateUsersShown = F2(
 	function (model, result) {
-		var _p4 = result;
-		if (_p4.ctor === 'Ok') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{users: _p4._0}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			if (_p4._0.ctor === 'BadPayload') {
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{stuff: _p4._0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			} else {
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{stuff: 'error fetching users'}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			}
-		}
-	});
-var _user$project$Update$updateTournamentSeriesesShown = F2(
-	function (model, result) {
 		var _p5 = result;
 		if (_p5.ctor === 'Ok') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
 					model,
-					{tournamentSerieses: _p5._0}),
+					{users: _p5._0}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		} else {
@@ -10270,6 +10377,37 @@ var _user$project$Update$updateTournamentSeriesesShown = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
+						{stuff: 'error fetching users'}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			}
+		}
+	});
+var _user$project$Update$updateTournamentSeriesesShown = F2(
+	function (model, result) {
+		var _p6 = result;
+		if (_p6.ctor === 'Ok') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{tournamentSerieses: _p6._0}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			if (_p6._0.ctor === 'BadPayload') {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{stuff: _p6._0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
 						{stuff: 'error fetching tournaments'}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10278,25 +10416,31 @@ var _user$project$Update$updateTournamentSeriesesShown = F2(
 	});
 var _user$project$Update$update = F2(
 	function (msg, model) {
-		var _p6 = msg;
-		switch (_p6.ctor) {
+		var _p7 = msg;
+		switch (_p7.ctor) {
 			case 'CreateNewUser':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
 					_1: A2(_user$project$Queries$createUser, model.formData.user.name, model.formData.user.email)
 				};
+			case 'CreateNewResult':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A3(_user$project$Queries$createResult, model, _p7._0, _p7._1)
+				};
 			case 'CreateNewStakingContract':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: A2(_user$project$Queries$createNewStakingContract, model, _p6._0)
+					_1: A2(_user$project$Queries$createNewStakingContract, model, _p7._0)
 				};
 			case 'CreateNewTournament':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: A2(_user$project$Queries$createTournament, model, _p6._0)
+					_1: A2(_user$project$Queries$createTournament, model, _p7._0)
 				};
 			case 'CreateNewTournamentSeries':
 				return {
@@ -10305,19 +10449,20 @@ var _user$project$Update$update = F2(
 					_1: _user$project$Queries$createTournamentSeries(model)
 				};
 			case 'SetFormData':
-				return A3(_user$project$Update$handleFormInput, model, _p6._0, _p6._1);
+				return A3(_user$project$Update$handleFormInput, model, _p7._0, _p7._1);
 			case 'UpdateTournamentSeriesesShow':
-				return A2(_user$project$Update$updateTournamentSeriesesShown, model, _p6._0);
+				return A2(_user$project$Update$updateTournamentSeriesesShown, model, _p7._0);
 			default:
-				return A2(_user$project$Update$updateUsersShown, model, _p6._0);
+				return A2(_user$project$Update$updateUsersShown, model, _p7._0);
 		}
 	});
 
 var _user$project$Main$initialFormData = {
-	user: {name: '', email: ''},
+	result: {prize: 0},
+	stakingContract: {halfPercentsSold: 0, rate: 0, stakerId: ''},
 	tournament: {name: '', feeInCents: 0},
 	tournamentSeries: {city: '', name: ''},
-	stakingContract: {halfPercentsSold: 0, rate: 0, stakerId: ''}
+	user: {name: '', email: ''}
 };
 var _user$project$Main$initialState = {
 	userId: '1',
