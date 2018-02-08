@@ -9201,66 +9201,41 @@ var _user$project$View_View$viewTournamentResult = function (tournament) {
 	}
 };
 var _user$project$View_View$newStakerForm = function (tournament) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$form,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onSubmit(
-						_user$project$Data$CreateNewStakingContract(tournament.id)),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$label,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Staker id'),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$input,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$name('staker-id'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onInput(
-												_user$project$Data$SetFormData(
-													_user$project$Data$SettStakingContract(_user$project$Data$StakerId))),
-											_1: {ctor: '[]'}
-										}
-									},
-									{ctor: '[]'}),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {
+	var _p1 = tournament.result;
+	if (_p1.ctor === 'Nothing') {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$form,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onSubmit(
+							_user$project$Data$CreateNewStakingContract(tournament.id)),
+						_1: {ctor: '[]'}
+					},
+					{
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$label,
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('half percents sold'),
+								_0: _elm_lang$html$Html$text('Staker id'),
 								_1: {
 									ctor: '::',
 									_0: A2(
 										_elm_lang$html$Html$input,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$name('half-percents-sold'),
+											_0: _elm_lang$html$Html_Attributes$name('staker-id'),
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$html$Html_Events$onInput(
 													_user$project$Data$SetFormData(
-														_user$project$Data$SettStakingContract(_user$project$Data$HalfPercentsSold))),
+														_user$project$Data$SettStakingContract(_user$project$Data$StakerId))),
 												_1: {ctor: '[]'}
 											}
 										},
@@ -9275,19 +9250,19 @@ var _user$project$View_View$newStakerForm = function (tournament) {
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('rate'),
+									_0: _elm_lang$html$Html$text('half percents sold'),
 									_1: {
 										ctor: '::',
 										_0: A2(
 											_elm_lang$html$Html$input,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$name('rate'),
+												_0: _elm_lang$html$Html_Attributes$name('half-percents-sold'),
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Events$onInput(
 														_user$project$Data$SetFormData(
-															_user$project$Data$SettStakingContract(_user$project$Data$Rate))),
+															_user$project$Data$SettStakingContract(_user$project$Data$HalfPercentsSold))),
 													_1: {ctor: '[]'}
 												}
 											},
@@ -9298,20 +9273,53 @@ var _user$project$View_View$newStakerForm = function (tournament) {
 							_1: {
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$button,
+									_elm_lang$html$Html$label,
 									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('submit'),
-										_1: {ctor: '[]'}
+										_0: _elm_lang$html$Html$text('rate'),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$input,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$name('rate'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onInput(
+															_user$project$Data$SetFormData(
+																_user$project$Data$SettStakingContract(_user$project$Data$Rate))),
+														_1: {ctor: '[]'}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {ctor: '[]'}
+										}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$button,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('submit'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
-					}
-				}),
-			_1: {ctor: '[]'}
-		});
+					}),
+				_1: {ctor: '[]'}
+			});
+	} else {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{ctor: '[]'});
+	}
 };
 var _user$project$View_View$newStakingContract = function (tournament) {
 	return A2(

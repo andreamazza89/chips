@@ -170,36 +170,41 @@ newStakingContract tournament =
 
 newStakerForm : Tournament -> Html Msg
 newStakerForm tournament =
-    div []
-        [ Html.form
-            [ onSubmit (CreateNewStakingContract tournament.id) ]
-            [ label []
-                [ text "Staker id"
-                , input
-                    [ name "staker-id"
-                    , onInput <| SetFormData (SettStakingContract StakerId)
+    case tournament.result of
+        Nothing ->
+            div []
+                [ Html.form
+                    [ onSubmit (CreateNewStakingContract tournament.id) ]
+                    [ label []
+                        [ text "Staker id"
+                        , input
+                            [ name "staker-id"
+                            , onInput <| SetFormData (SettStakingContract StakerId)
+                            ]
+                            []
+                        ]
+                    , label []
+                        [ text "half percents sold"
+                        , input
+                            [ name "half-percents-sold"
+                            , onInput <| SetFormData (SettStakingContract HalfPercentsSold)
+                            ]
+                            []
+                        ]
+                    , label []
+                        [ text "rate"
+                        , input
+                            [ name "rate"
+                            , onInput <| SetFormData (SettStakingContract Rate)
+                            ]
+                            []
+                        ]
+                    , button [] [ text "submit" ]
                     ]
-                    []
                 ]
-            , label []
-                [ text "half percents sold"
-                , input
-                    [ name "half-percents-sold"
-                    , onInput <| SetFormData (SettStakingContract HalfPercentsSold)
-                    ]
-                    []
-                ]
-            , label []
-                [ text "rate"
-                , input
-                    [ name "rate"
-                    , onInput <| SetFormData (SettStakingContract Rate)
-                    ]
-                    []
-                ]
-            , button [] [ text "submit" ]
-            ]
-        ]
+
+        Just _ ->
+            div [] []
 
 
 viewTournamentResult : Tournament -> Html Msg
