@@ -14,7 +14,7 @@ defmodule Chips.Result do
   @doc false
   def changeset(%Result{} = result, attrs) do
     result
-    |> cast(attrs, [:player, :prize, :tournament])
-    |> validate_required([:player, :prize, :tournament])
+    |> cast(attrs, [:prize])
+    |> validate_required([:prize])
   end
 end

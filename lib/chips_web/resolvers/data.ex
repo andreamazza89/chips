@@ -15,6 +15,11 @@ defmodule ChipsWeb.Resolvers.Data do
     {:ok, list_users()}
   end
 
+  def create_result(_parent, args, _resolution) do
+    create_result(args)
+    {:ok, list_tournament_serieses()}
+  end
+
   def create_tournament_series(_parent, args, _resolution) do
     create_tournament_series(args)
     {:ok, list_tournament_serieses()}

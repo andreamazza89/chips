@@ -25,6 +25,14 @@ defmodule ChipsWeb.Schema do
 
 	mutation do
 
+		field :create_result, type: list_of(:tournament_series) do
+			arg :player_id, non_null(:string)
+			arg :prize, non_null(:integer)
+			arg :tournament_id, non_null(:string)
+
+			resolve &Resolvers.Data.create_result/3
+		end
+
 		field :create_tournament_series, type: list_of(:tournament_series) do
 			arg :city, non_null(:string)
 			arg :name, non_null(:string)
