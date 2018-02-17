@@ -32,6 +32,8 @@ actually exist in the database; how to do that? --- assoc_constraint maybe?
 
 - add uniqueness constraint of email, and all other constraints necessary
 
+- remove hard-coded url in front-end
+
 - maybe remove timestamps()?
 
 - host address not hardcoded
