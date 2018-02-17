@@ -51,6 +51,7 @@ exports.config = {
 
     elmBrunch: {
       elmFolder: "elm",
+      executablePath: '../node_modules/elm/binwrappers',
       mainModules: ["Main.elm"],
       outputFolder: "../js",
     },
