@@ -10,7 +10,7 @@ createResult : Model -> TournamentId -> PlayerId -> Cmd Msg
 createResult model tournamentId playerId =
     Http.send UpdateTournamentSeriesesShow <|
         Http.post
-            "http://localhost:4000/api"
+            "/api"
             (newResultRequestBody model.formData.result.prize tournamentId playerId)
             (graphQlDecoder "createResult" (list tournamentSeriesDecoder))
 
@@ -41,7 +41,7 @@ createTournamentSeries : Model -> Cmd Msg
 createTournamentSeries model =
     Http.send UpdateTournamentSeriesesShow <|
         Http.post
-            "http://localhost:4000/api"
+            "/api"
             (newTournamentSeriesRequestBody model.formData.tournamentSeries.city model.formData.tournamentSeries.name)
             (graphQlDecoder "createTournamentSeries" (list tournamentSeriesDecoder))
 
@@ -69,7 +69,7 @@ createNewStakingContract : Model -> TournamentId -> Cmd Msg
 createNewStakingContract model tournamentId =
     Http.send UpdateTournamentSeriesesShow <|
         Http.post
-            "http://localhost:4000/api"
+            "/api"
             (newStakeContractRequestBody
                 model.formData.stakingContract.stakerId
                 model.formData.stakingContract.halfPercentsSold
@@ -139,7 +139,7 @@ fetchUsers : Cmd Msg
 fetchUsers =
     Http.send UpdateUsersShown <|
         Http.post
-            "http://localhost:4000/api"
+            "/api"
             usersRequestBody
             (graphQlDecoder "users" (list userDecoder))
 
@@ -156,7 +156,7 @@ fetchSerieses : Cmd Msg
 fetchSerieses =
     Http.send UpdateTournamentSeriesesShow <|
         Http.post
-            "http://localhost:4000/api"
+            "/api"
             tournamentSeriesesRequestBody
             (graphQlDecoder "tournamentSerieses" (list tournamentSeriesDecoder))
 
@@ -182,7 +182,7 @@ createUser : String -> String -> Cmd Msg
 createUser name email =
     Http.send UpdateUsersShown <|
         Http.post
-            "http://localhost:4000/api"
+            "/api"
             (createUserRequestBody name email)
             (graphQlDecoder "createUser" (list userDecoder))
 
