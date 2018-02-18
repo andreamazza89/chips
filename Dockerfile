@@ -15,4 +15,4 @@ RUN mix release --env=prod --verbose
 EXPOSE 8080
 EXPOSE 5432
 
-CMD ["_build/prod/rel/chips/bin/chips", "foreground"]
+CMD ["bash", "migrate_and_start.sh"]

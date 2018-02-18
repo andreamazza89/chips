@@ -109,7 +109,7 @@ createTournament : Model -> SeriesId -> Cmd Msg
 createTournament model seriesId =
     Http.send UpdateTournamentSeriesesShow <|
         Http.post
-            "http://localhost:4000/api"
+            "/api"
             (newTournamentRequestBody model.formData.tournament.name model.formData.tournament.feeInCents seriesId)
             (graphQlDecoder "createTournament" (list tournamentSeriesDecoder))
 
