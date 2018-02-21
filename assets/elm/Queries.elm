@@ -1,7 +1,7 @@
 module Queries exposing (..)
 
 import Http exposing (..)
-import Json.Decode exposing (list, field, float, maybe, map, map2, map3, map4, string, int)
+import Json.Decode exposing (list, field, float, maybe, map, map2, map3, map4, map5, string, int)
 import Json.Encode exposing (encode, object)
 import Data exposing (..)
 
@@ -29,7 +29,7 @@ newResultRequestBody prize tournamentId playerId =
                         ++ ", playerId: \""
                         ++ playerId
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -57,7 +57,7 @@ newTournamentSeriesRequestBody city name =
                         ++ "\", name: \""
                         ++ name
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -97,7 +97,7 @@ newStakeContractRequestBody stakerId halfPercents userId rate tournamentId =
                         ++ ", playerId: "
                         ++ userId
                         ++ ")"
-                        ++ "{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -127,7 +127,7 @@ newTournamentRequestBody name feeInCents seriesId =
                         ++ ", tournamentSeriesId: \""
                         ++ seriesId
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -220,9 +220,10 @@ tournamentSeriesDecoder =
 
 tournamentDecoder : Json.Decode.Decoder Tournament
 tournamentDecoder =
-    map4 Tournament
-        (field "name" string)
+    map5 Tournament
         (field "id" string)
+        (field "feeInCents" int)
+        (field "name" string)
         (field "result" (maybe int))
         (field "stakingContracts" (list stakingContractDecoder))
 

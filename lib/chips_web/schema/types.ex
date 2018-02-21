@@ -22,6 +22,7 @@ defmodule ChipsWeb.Schema.Types do
   object :tournament do
     field :id, :id
     field :city, :string
+    field :fee_in_cents, :integer
     field :name, :string
     field :result, :integer
     field :starts, :naive_datetime

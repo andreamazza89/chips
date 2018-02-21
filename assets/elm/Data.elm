@@ -124,8 +124,9 @@ type alias TournamentSeries =
 
 
 type alias Tournament =
-    { name : String
-    , id : TournamentId
+    { id : TournamentId
+    , fee_in_cents : Int
+    , name : String
     , result : Maybe Int
     , stakingContracts : List StakingContract
     }

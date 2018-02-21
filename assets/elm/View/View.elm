@@ -139,7 +139,7 @@ newTournament series =
 viewTournament : Tournament -> Html Msg
 viewTournament tournament =
     div [ class "tournament" ]
-        [ h4 [] [ text tournament.name ]
+        [ h4 [] [ text (tournament.name ++ " (" ++ toString (tournament.fee_in_cents) ++ ")") ]
         , ul [] (List.map viewStakingContract tournament.stakingContracts)
         , newStakingContract tournament
         , viewTournamentResult tournament
