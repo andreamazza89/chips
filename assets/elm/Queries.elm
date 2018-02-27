@@ -171,7 +171,7 @@ tournamentSeriesesRequestBody =
                         ++ "city,"
                         ++ "id,"
                         ++ "name,"
-                        ++ " tournaments { name, id, result, stakingContracts { staker { name }, rate, halfPercentsSold } } } }"
+                        ++ " tournaments { feeInCents, name, id, result, stakingContracts { staker { name }, rate, halfPercentsSold } } } }"
                     )
               )
             ]

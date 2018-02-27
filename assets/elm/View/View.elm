@@ -140,15 +140,15 @@ viewTournament : Tournament -> Html Msg
 viewTournament tournament =
     div [ class "tournament" ]
         [ h4 [] [ text (tournament.name ++ " (" ++ toString (tournament.fee_in_cents) ++ ")") ]
-        , ul [] (List.map viewStakingContract tournament.stakingContracts)
+        , ul [] (List.map (viewStakingContract tournament.fee_in_cents) tournament.stakingContracts)
         , newStakingContract tournament
         , viewTournamentResult tournament
         , br [] []
         ]
 
 
-viewStakingContract : StakingContract -> Html Msg
-viewStakingContract stakingContract =
+viewStakingContract : Int -> StakingContract -> Html Msg
+viewStakingContract tournamentFee stakingContract =
     li []
         [ text
             (stakingContract.staker.name
@@ -156,6 +156,8 @@ viewStakingContract stakingContract =
                 ++ toString stakingContract.rate
                 ++ " | half_percents_sold: "
                 ++ toString stakingContract.halfPercentsSold
+                ++ " | cost: "
+                ++ toString (ceiling ((toFloat tournamentFee / 100) * stakingContract.rate * (toFloat stakingContract.halfPercentsSold)))
             )
         ]
 
