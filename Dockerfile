@@ -13,6 +13,5 @@ RUN mix phx.digest
 RUN mix release --env=prod --verbose
 
 EXPOSE 8080
-EXPOSE 5432
 
 CMD ["bash", "migrate_and_start.sh"]
