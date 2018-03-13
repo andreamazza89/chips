@@ -1,10 +1,20 @@
+variable "db_instance_name" {}
+variable "db_user_name" {}
+variable "db_password" {}
+variable "network_tag" {
+  default = "chips-network"
+}
 variable "project_id" {}
 variable "region" {}
 variable "zone" {}
 
+
+////////// network - allow http
+///////// change release port to 8000
+
 resource "google_sql_database_instance" "chips-database" {
   database_version = "POSTGRES_9_6"
-  name             = "chips-pips"
+  name             = "${var.db_instance_name}"
   project          = "${var.project_id}"
   region           = "${var.region}"
 
@@ -20,15 +30,13 @@ resource "google_sql_database_instance" "chips-database" {
 //////////////////////////////////
 }
 
-/*
 resource "google_sql_user" "users" {
-  name     = "test"
+  name     = "${var.db_user_name}"
   instance = "${google_sql_database_instance.chips-database.name}"
   host     = ""
-  password = "test-monkey"
+  password = "${var.db_password}"
   project  = "${var.project_id}"
 }
-*/
 
 resource "google_compute_instance" "chips-instance" {
   depends_on                = ["google_sql_database_instance.chips-database"]
@@ -37,6 +45,7 @@ resource "google_compute_instance" "chips-instance" {
   machine_type              = "f1-micro"
   allow_stopping_for_update = "true"
   zone                      = "${var.region}-${var.zone}"
+  tags                      = ["${var.network_tag}"]
 
   boot_disk {
     initialize_params {
@@ -52,10 +61,7 @@ resource "google_compute_instance" "chips-instance" {
     }
   }
 
-// create table in database
-// user??
-// pull proxy
-// run proxy (interpolate db connection name?): docker run -it -v /mnt/stateful_partition/cloudsql:/cloudsql -p 127.0.0.1:5432:5432 gcr.io/cloudsql-docker/gce-proxy:1.11 /cloud_sql_proxy -instances=chips-194714:europe-west2:chips-pips=tcp:0.0.0.0:5432
+///////////////// create database in instance (if not existing?)
 
 	metadata {
     gce-container-declaration = <<EOF
@@ -67,7 +73,12 @@ spec:
       tty: false
   restartPolicy: Always
 EOF
+
   }
+
+/////// for some reason the multiline script doesn't seem to work - need to try again
+///////
+  metadata_startup_script = "docker pull gcr.io/cloudsql-docker/gce-proxy:1.11 && docker run -d -v /mnt/stateful_partition/cloudsql:/cloudsql -p 127.0.0.1:5432:5432 gcr.io/cloudsql-docker/gce-proxy:1.11 /cloud_sql_proxy -instances=${var.project_id}:${var.region}:${var.db_instance_name}=tcp:0.0.0.0:5432"
 
 //////////////////////////////////
 // ANDREA - once you have a stable solution, see if you can trim these down; or better, create a new service account just for
@@ -85,4 +96,18 @@ EOF
         "https://www.googleapis.com/auth/sqlservice.admin"
     ]
   }
+}
+
+resource "google_compute_firewall" "default" {
+    name    = "chips-firewall"
+    network = "default"
+    project = "${var.project_id}"
+
+    allow {
+        protocol = "tcp"
+        ports = ["80", "8080"]
+    }
+
+    source_ranges = ["0.0.0.0/0"]
+    target_tags   = ["${var.network_tag}"]
 }
