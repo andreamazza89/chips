@@ -1,4 +1,6 @@
-db_instance_name = "chips-sql"
+db_instance_name = "chips-postgres"
+db_name          = "chips-prod"
+network_tag      = "chips-network"
 project_id       = "chips-194714"
 region           = "europe-west2"
 zone             = "a"

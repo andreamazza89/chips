@@ -1,26 +1,26 @@
+variable "environment" {}
 variable "db_instance_name" {}
+variable "db_name" {}
 variable "db_user_name" {}
 variable "db_password" {}
-variable "network_tag" {
-  default = "chips-network"
-}
+variable "network_tag" {}
 variable "project_id" {}
 variable "region" {}
 variable "zone" {}
 
 
-////////// network - allow http
 ///////// change release port to 8000
 
-resource "google_sql_database_instance" "chips-database" {
+resource "google_sql_database_instance" "chips-database-instance" {
   database_version = "POSTGRES_9_6"
-  name             = "${var.db_instance_name}"
+  name             = "${var.db_instance_name}-${var.environment}"
   project          = "${var.project_id}"
   region           = "${var.region}"
 
   settings {
     tier = "db-f1-micro"
   }
+}
 
 //////////////////////////////////
 // ANDREA - this needs the database `chips_prod` to exist and a user for Postgrex to establish a connection
@@ -28,20 +28,25 @@ resource "google_sql_database_instance" "chips-database" {
 //   - database; will there be a duplication of truth in terms of db name resolution? --> maybe the migrator should also create the database if not existent?
 //   - user; this can be created with terraform but need to do it without revealing secrets and using the same credentials as used when building release
 //////////////////////////////////
+
+resource "google_sql_database" "chips-database" {
+  instance  = "${google_sql_database_instance.chips-database-instance.name}"
+  name      = "${var.db_name}-${var.environment}"
+  project   = "${var.project_id}"
 }
 
 resource "google_sql_user" "users" {
   name     = "${var.db_user_name}"
-  instance = "${google_sql_database_instance.chips-database.name}"
+  instance = "${google_sql_database_instance.chips-database-instance.name}"
   host     = ""
   password = "${var.db_password}"
   project  = "${var.project_id}"
 }
 
 resource "google_compute_instance" "chips-instance" {
-  depends_on                = ["google_sql_database_instance.chips-database"]
+  depends_on                = ["google_sql_database_instance.chips-database-instance"]
   project                   = "${var.project_id}"
-  name                      = "chips"
+  name                      = "chips-${var.environment}"
   machine_type              = "f1-micro"
   allow_stopping_for_update = "true"
   zone                      = "${var.region}-${var.zone}"
@@ -61,8 +66,6 @@ resource "google_compute_instance" "chips-instance" {
     }
   }
 
-///////////////// create database in instance (if not existing?)
-
 	metadata {
     gce-container-declaration = <<EOF
 spec:
@@ -73,12 +76,11 @@ spec:
       tty: false
   restartPolicy: Always
 EOF
-
   }
 
 /////// for some reason the multiline script doesn't seem to work - need to try again
 ///////
-  metadata_startup_script = "docker pull gcr.io/cloudsql-docker/gce-proxy:1.11 && docker run -d -v /mnt/stateful_partition/cloudsql:/cloudsql -p 127.0.0.1:5432:5432 gcr.io/cloudsql-docker/gce-proxy:1.11 /cloud_sql_proxy -instances=${var.project_id}:${var.region}:${var.db_instance_name}=tcp:0.0.0.0:5432"
+  metadata_startup_script = "docker pull gcr.io/cloudsql-docker/gce-proxy:1.11 && docker run -d -v /mnt/stateful_partition/cloudsql:/cloudsql -p 127.0.0.1:5432:5432 gcr.io/cloudsql-docker/gce-proxy:1.11 /cloud_sql_proxy -instances=${var.project_id}:${var.region}:${google_sql_database_instance.chips-database-instance.name}=tcp:0.0.0.0:5432"
 
 //////////////////////////////////
 // ANDREA - once you have a stable solution, see if you can trim these down; or better, create a new service account just for
