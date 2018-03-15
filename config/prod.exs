@@ -62,6 +62,9 @@ config :logger, level: :info
 #     config :chips, ChipsWeb.Endpoint, server: true
 #
 
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"
+config :chips, Chips.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: System.get_env("DB_USER_NAME"),
+  password: System.get_env("DB_PASSWORD"),
+  database: System.get_env("DB_NAME"),
+  pool_size: 15

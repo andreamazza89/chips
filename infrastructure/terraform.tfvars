@@ -1,5 +1,5 @@
 db_instance_name = "chips-postgres"
-db_name          = "chips-prod"
+db_name          = "chips"
 network_tag      = "chips-network"
 project_id       = "chips-194714"
 region           = "europe-west2"
