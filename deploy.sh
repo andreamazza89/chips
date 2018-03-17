@@ -1,3 +1,5 @@
+IMAGE_VERSION=`git rev-parse HEAD`
+
 echo "Loading environment"
 source .production_environment_secrets.sh
 
@@ -26,11 +28,11 @@ docker build \
   --build-arg MIX_ENV=${MIX_ENV} \
   --build-arg PORT=${PORT} \
   --no-cache \
-  -t "${DOCKER_IMAGE_REPOSITORY}:vx" . # need to think about versioning - maybe the git commit sha?
+  -t "${DOCKER_IMAGE_REPOSITORY}:$IMAGE_VERSION" .
 
 echo "Pushing new image to the repository"
-gcloud docker -- push ${DOCKER_IMAGE_REPOSITORY}:vx
+gcloud docker -- push ${DOCKER_IMAGE_REPOSITORY}:$IMAGE_VERSION
 
 echo "Updating instance definition"
 gcloud beta compute instances update-container chips-${ENVIRONMENT} \
-  --container-image ${DOCKER_IMAGE_REPOSITORY}:vx
+  --container-image ${DOCKER_IMAGE_REPOSITORY}:$IMAGE_VERSION
