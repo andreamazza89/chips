@@ -9,8 +9,6 @@ variable "region" {}
 variable "zone" {}
 
 
-///////// change release port to 8000
-
 resource "google_sql_database_instance" "chips-database-instance" {
   database_version = "POSTGRES_9_6"
   name             = "${var.db_instance_name}-${var.environment}"
