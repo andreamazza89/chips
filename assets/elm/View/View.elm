@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Data exposing (..)
+import View.Helper exposing (formatContractCost, formatContractWinnings)
 
 
 view : Model -> Html Msg
@@ -140,15 +141,15 @@ viewTournament : Tournament -> Html Msg
 viewTournament tournament =
     div [ class "tournament" ]
         [ h4 [] [ text (tournament.name ++ " (" ++ toString (tournament.fee_in_cents) ++ ")") ]
-        , ul [] (List.map (viewStakingContract tournament.fee_in_cents) tournament.stakingContracts)
+        , ul [] (List.map (viewStakingContract tournament) tournament.stakingContracts)
         , newStakingContract tournament
         , viewTournamentResult tournament
         , br [] []
         ]
 
 
-viewStakingContract : Int -> StakingContract -> Html Msg
-viewStakingContract tournamentFee stakingContract =
+viewStakingContract : Tournament -> StakingContract -> Html Msg
+viewStakingContract tournament stakingContract =
     li []
         [ text
             (stakingContract.staker.name
@@ -157,7 +158,8 @@ viewStakingContract tournamentFee stakingContract =
                 ++ " | half_percents_sold: "
                 ++ toString stakingContract.halfPercentsSold
                 ++ " | cost: "
-                ++ toString (ceiling ((toFloat tournamentFee / 100) * stakingContract.rate * (toFloat stakingContract.halfPercentsSold)))
+                ++ formatContractCost stakingContract tournament.fee_in_cents
+                ++ formatContractWinnings tournament stakingContract
             )
         ]
 
