@@ -3,6 +3,10 @@ defmodule Chips.ProcessDataTest do
 
   alias Chips.{ProcessData, Result, Tournament, TournamentSeries}
 
+  test "does nothing when there are no serieses" do
+    assert ProcessData.add_result_to_tournaments([]) == []
+  end
+
   test "processes tournament result when there is one" do
     raw_serieses = [
       %TournamentSeries{

@@ -1,5 +1,6 @@
 defmodule Chips.ProcessData do
 
+  def add_result_to_tournaments([]) do [] end
   def add_result_to_tournaments(serieses = [%Chips.TournamentSeries{} | _]) do
     Enum.map(serieses, fn(series) ->
       %{ series | tournaments:  add_result(series) }
