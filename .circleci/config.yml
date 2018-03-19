@@ -2,4 +2,6 @@ jobs:
   build:
     machine: true
   steps:
-    - run: echo "hello circular world!"
+    - run:
+      name: do something without crashing
+      command: echo "hello circular world!"
