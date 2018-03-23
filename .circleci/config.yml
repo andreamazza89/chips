@@ -3,6 +3,8 @@ jobs:
     machine: true
 
     steps:
+      - checkout
+
       - run:
           name: Build docker image
-          command: ls
+          command: echo "hello circle"
