@@ -1,3 +1,5 @@
+// TODO: setup service account for CircleCI and output secret (possibly base64 encoded?) for upload to circleCi
+
 variable "environment" {}
 variable "db_instance_name" {}
 variable "db_name" {}
@@ -22,9 +24,8 @@ resource "google_sql_database_instance" "chips-database-instance" {
 
 //////////////////////////////////
 // ANDREA - this needs the database `chips_prod` to exist and a user for Postgrex to establish a connection
-//   - database; can be setup programmatically, not sure about terraform (maybe can open a pull request?) https://cloud.google.com/sql/docs/postgres/create-manage-databases
 //   - database; will there be a duplication of truth in terms of db name resolution? --> maybe the migrator should also create the database if not existent?
-//   - user; this can be created with terraform but need to do it without revealing secrets and using the same credentials as used when building release
+//   - user; another duplication of truth
 //////////////////////////////////
 
 resource "google_sql_database" "chips-database" {
