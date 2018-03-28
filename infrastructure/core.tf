@@ -1,4 +1,5 @@
 // TODO: setup service account for CircleCI and output secret (possibly base64 encoded?) for upload to circleCi
+// This account is to have compute instance admin and storage admin rights
 
 variable "environment" {}
 variable "db_instance_name" {}

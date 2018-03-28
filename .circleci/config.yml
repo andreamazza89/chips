@@ -10,11 +10,12 @@ jobs:
           command: echo ${GCLOUD_SERVICE_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
 
       - run:
-          name: Authenticate gcloud
+          name: Authenticate gcloud and set appropriate zone
           command: >-
                      sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update && \
                        sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json && \
-                       sudo /opt/google-cloud-sdk/bin/gcloud config set project ${GCLOUD_PROJECT}
+                       sudo /opt/google-cloud-sdk/bin/gcloud config set project ${GCLOUD_PROJECT} && \
+                       sudo /opt/google-cloud-sdk/bin/gcloud config set compute/zone ${GCLOUD_ZONE}
 
       - run:
           name: Build docker image
@@ -30,11 +31,11 @@ jobs:
 
       - run:
           name: Upload docker image to repository
-          command: gcloud docker -- push ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
+          command: sudo /opt/google-cloud-sdk/bin/gcloud docker -- push ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
 
       - run:
           name: Update instance definition
           command: >-
-                     gcloud beta compute instances update-container chips-${ENVIRONMENT} \
+                     sudo /opt/google-cloud-sdk/bin/gcloud beta compute instances update-container chips-${ENVIRONMENT} \
                        --container-image ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
 
