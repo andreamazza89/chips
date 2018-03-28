@@ -16,3 +16,13 @@ jobs:
                        --build-arg PORT=$PORT \
                        --no-cache \
                        -t $DOCKER_IMAGE_REPOSITORY:$CIRCLE_SHA1 .
+
+      - run:
+          name: Upload docker image to repository
+          command: gcloud docker -- push $DOCKER_IMAGE_REPOSITORY:$CIRCLE_SHA1
+
+      - run:
+          name: Update instance definition
+          command: >-
+                     gcloud beta compute instances update-container chips-$ENVIRONMENT \
+                       --container-image $DOCKER_IMAGE_REPOSITORY:$CIRCLE_SHA1
