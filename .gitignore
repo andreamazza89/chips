@@ -28,6 +28,7 @@ npm-debug.log
 
 # elm!
 elm-stuff
+*/elm/compiled/*
 
 # Deployment secrets
 *secret*
