@@ -1,4 +1,4 @@
-db_instance_name = "chips-postgre"
+db_instance_name = "chips-postgrelm"
 db_name          = "chips"
 network_tag      = "chips-network"
 project_id       = "chips-194714"

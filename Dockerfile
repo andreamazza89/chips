@@ -10,7 +10,7 @@ ARG MIX_ENV
 # Update apt-get index and install bash
 RUN apt-get update
 RUN apt-get install bash
-ENV REPLACE_OS_VARS=true TERM=xterm PORT=$PORT MIX_ENV=$MIX_ENV
+ENV REPLACE_OS_VARS=true TERM=xterm PORT=$PORT MIX_ENV=$MIX_ENV DB_NAME=$DB_NAME DB_PASSWORD=$DB_PASSWORD DB_USER_NAME=$DB_USER_NAME
 
 # Install node
 RUN apt-get install sudo
