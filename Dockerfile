@@ -20,15 +20,15 @@ RUN apt-get install nodejs
 # Get the source code
 COPY . .
 
-# Prepare the static assets
-RUN cd assets && \
-  npm install && \
-  ./node_modules/brunch/bin/brunch build
-
 # Fetch Elixir dependencies and compile
 RUN mix local.rebar --force
 RUN mix local.hex --force
 RUN mix do deps.get, deps.compile, compile
+
+# Prepare the static assets
+RUN cd assets && \
+  npm install && \
+  ./node_modules/brunch/bin/brunch build
 
 EXPOSE $PORT
 
