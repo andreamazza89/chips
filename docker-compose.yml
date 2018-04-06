@@ -1,15 +1,21 @@
 version: '3'
 services:
-  web:
-    build: .
-    ports:
-      - "8080:8080"
-      - "5432:5432"
   postgres:
     image: postgres:9.6
-    ports:
-      - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: chips_prod
+      POSTGRES_USER: dev-user
+      POSTGRES_PASSWORD: dev-password
+      POSTGRES_DB: chips-development
+  web:
+    build:
+      context: .
+      args:
+        - DB_NAME
+        - DB_PASSWORD
+        - DB_USER_NAME
+        - PORT
+        - MIX_ENV
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
