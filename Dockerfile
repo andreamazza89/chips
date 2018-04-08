@@ -9,11 +9,6 @@ COPY . .
 RUN apt-get update
 RUN apt-get install bash
 
-# Fetch Elixir dependencies and compile
-RUN mix local.rebar --force
-RUN mix local.hex --force
-RUN mix do deps.get, deps.compile, compile
-
 # Install node
 RUN apt-get install sudo
 RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
