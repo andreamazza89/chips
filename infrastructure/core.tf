@@ -7,6 +7,7 @@ variable "db_name" {}
 variable "db_user_name" {}
 variable "db_password" {}
 variable "network_tag" {}
+variable "port" {}
 variable "project_id" {}
 variable "region" {}
 variable "zone" {}
@@ -71,6 +72,19 @@ resource "google_compute_instance" "chips-instance" {
 spec:
   containers:
     - image: 'gcr.io/chips-194714/chips-app:v1'
+      env:
+        - name: DB_NAME
+          value: "${google_sql_database.chips-database.name}"
+        - name: DB_PASSWORD
+          value: "${var.db_password}"
+        - name: DB_USER_NAME
+          value: "${var.db_user_name}"
+        - name: DB_USER_NAME
+          value: "${var.db_user_name}"
+        - name: MIX_ENV
+          value: "${var.environment}"
+        - name: PORT
+          value: "${var.port}"
       name: chips
       stdin: false
       tty: false
