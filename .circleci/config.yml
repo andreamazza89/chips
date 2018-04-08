@@ -20,14 +20,7 @@ jobs:
       - run:
           name: Build docker image
           command: >-
-                     docker build \
-                       --build-arg DB_NAME=${DB_NAME} \
-                       --build-arg DB_PASSWORD=${DB_PASSWORD} \
-                       --build-arg DB_USER_NAME=${DB_USER_NAME} \
-                       --build-arg MIX_ENV=${MIX_ENV} \
-                       --build-arg PORT=${PORT} \
-                       --no-cache \
-                       -t ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1} .
+                     docker build --no-cache -t ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1} .
 
       - run:
           name: Upload docker image to repository
