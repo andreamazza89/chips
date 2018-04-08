@@ -7,15 +7,10 @@ services:
       POSTGRES_PASSWORD: dev-password
       POSTGRES_DB: chips-development
   web:
+    env_file: .development_environment_secrets.sh
     build:
       context: .
-      args:
-        - DB_NAME
-        - DB_PASSWORD
-        - DB_USER_NAME
-        - PORT
-        - MIX_ENV
     ports:
-      - "8000:8000"
+      - "8080:8080"
     depends_on:
       - postgres

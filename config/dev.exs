@@ -7,7 +7,8 @@ use Mix.Config
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :chips, ChipsWeb.Endpoint,
-  http: [port: 8000],
+  load_from_system_env: true,
+  http: [port: "${PORT}"],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
@@ -51,8 +52,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :chips, Chips.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "dev-user",
-  password: "dev-password",
-  database: "chips-development",
+  username: System.get_env("DB_USER_NAME"),
+  password: System.get_env("DB_PASSWORD"),
+  database: System.get_env("DB_NAME"),
   hostname: "postgres",
   pool_size: 10
