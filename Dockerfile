@@ -37,6 +37,9 @@ FROM elixir:alpine
 
 COPY --from=0 /chips-app .
 
+# Install Hex
+RUN mix local.hex --force
+
 # Set environment variables from build command input
 ARG DB_NAME
 ARG DB_PASSWORD
