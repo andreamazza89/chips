@@ -6,6 +6,15 @@ jobs:
       - checkout
 
       - run:
+          name: Test conditional
+          command: >-
+                     if [[ $CIRCLE_BRANCH = 'master' ]]; then
+                        echo "${CIRCLE_BRANCH}";
+                     elif [[ $CIRCLE_BRANCH = 'release' ]]; then
+                        echo "whatevs";
+                     fi
+
+      - run:
           name: Decode gcloud key
           command: echo ${GCLOUD_SERVICE_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
 
