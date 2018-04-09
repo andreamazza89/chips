@@ -1,4 +1,5 @@
-db_instance_name = "chips-postgrezio"
+app_name         = "chips"
+db_instance_name = "chips-postgrez"
 db_name          = "chips"
 network_tag      = "chips-network"
 project_id       = "chips-194714"

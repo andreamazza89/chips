@@ -32,3 +32,11 @@ elm-stuff
 
 # Deployment secrets
 *secret*
+
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+

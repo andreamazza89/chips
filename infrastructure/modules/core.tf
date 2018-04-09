@@ -2,6 +2,8 @@
 // This account is to have compute instance admin and storage admin rights
 
 variable "environment" {}
+
+variable "app_name" {}
 variable "db_instance_name" {}
 variable "db_name" {}
 variable "db_user_name" {}
@@ -11,7 +13,6 @@ variable "port" {}
 variable "project_id" {}
 variable "region" {}
 variable "zone" {}
-
 
 resource "google_sql_database_instance" "chips-database-instance" {
   database_version = "POSTGRES_9_6"
@@ -24,19 +25,13 @@ resource "google_sql_database_instance" "chips-database-instance" {
   }
 }
 
-//////////////////////////////////
-// ANDREA - this needs the database `chips_prod` to exist and a user for Postgrex to establish a connection
-//   - database; will there be a duplication of truth in terms of db name resolution? --> maybe the migrator should also create the database if not existent?
-//   - user; another duplication of truth
-//////////////////////////////////
-
 resource "google_sql_database" "chips-database" {
   instance  = "${google_sql_database_instance.chips-database-instance.name}"
   name      = "${var.db_name}-${var.environment}"
   project   = "${var.project_id}"
 }
 
-resource "google_sql_user" "users" {
+resource "google_sql_user" "user" {
   name     = "${var.db_user_name}"
   instance = "${google_sql_database_instance.chips-database-instance.name}"
   host     = ""
@@ -47,11 +42,11 @@ resource "google_sql_user" "users" {
 resource "google_compute_instance" "chips-instance" {
   depends_on                = ["google_sql_database_instance.chips-database-instance"]
   project                   = "${var.project_id}"
-  name                      = "chips-${var.environment}"
+  name                      = "${var.app_name}-${var.environment}"
   machine_type              = "f1-micro"
   allow_stopping_for_update = "true"
   zone                      = "${var.region}-${var.zone}"
-  tags                      = ["${var.network_tag}"]
+  tags                      = ["${var.network_tag}-${var.environment}"]
 
   boot_disk {
     initialize_params {
@@ -76,11 +71,9 @@ spec:
         - name: DB_NAME
           value: "${google_sql_database.chips-database.name}"
         - name: DB_PASSWORD
-          value: "${var.db_password}"
+          value: "${google_sql_user.user.password}"
         - name: DB_USER_NAME
-          value: "${var.db_user_name}"
-        - name: DB_USER_NAME
-          value: "${var.db_user_name}"
+          value: "${google_sql_user.user.name}"
         - name: MIX_ENV
           value: "${var.environment}"
         - name: PORT
@@ -115,7 +108,7 @@ EOF
 }
 
 resource "google_compute_firewall" "default" {
-    name    = "chips-firewall"
+    name    = "chips-firewall-${var.environment}"
     network = "default"
     project = "${var.project_id}"
 
@@ -125,5 +118,5 @@ resource "google_compute_firewall" "default" {
     }
 
     source_ranges = ["0.0.0.0/0"]
-    target_tags   = ["${var.network_tag}"]
+    target_tags   = ["${var.network_tag}-${var.environment}"]
 }
