@@ -6,15 +6,6 @@ jobs:
       - checkout
 
       - run:
-          name: Test conditional
-          command: >-
-                     if [[ $CIRCLE_BRANCH = 'master' ]]; then
-                        echo "${CIRCLE_BRANCH}";
-                     elif [[ $CIRCLE_BRANCH = 'release' ]]; then
-                        echo "whatevs";
-                     fi
-
-      - run:
           name: Decode gcloud key
           command: echo ${GCLOUD_SERVICE_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
 
@@ -38,6 +29,11 @@ jobs:
       - run:
           name: Update instance definition
           command: >-
-                     sudo /opt/google-cloud-sdk/bin/gcloud beta compute instances update-container chips-${ENVIRONMENT} \
-                       --container-image ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
+                     if [[ $CIRCLE_BRANCH = 'master' ]]; then
+                       sudo /opt/google-cloud-sdk/bin/gcloud beta compute instances update-container chips-staging \
+                         --container-image ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
+                     elif [[ $CIRCLE_BRANCH = 'release' ]]; then
+                       sudo /opt/google-cloud-sdk/bin/gcloud beta compute instances update-container chips-prod \
+                         --container-image ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
+                     fi
 
