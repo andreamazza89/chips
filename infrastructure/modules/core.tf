@@ -14,6 +14,7 @@ variable "project_id" {}
 variable "region" {}
 variable "zone" {}
 
+// persistence
 resource "google_sql_database_instance" "chips-database-instance" {
   database_version = "POSTGRES_9_6"
   name             = "${var.db_instance_name}-${var.environment}"
@@ -39,8 +40,8 @@ resource "google_sql_user" "user" {
   project  = "${var.project_id}"
 }
 
+// computation
 resource "google_compute_instance" "chips-instance" {
-  depends_on                = ["google_sql_database_instance.chips-database-instance"]
   project                   = "${var.project_id}"
   name                      = "${var.app_name}-${var.environment}"
   machine_type              = "f1-micro"
@@ -107,6 +108,7 @@ EOF
   }
 }
 
+// networking
 resource "google_compute_firewall" "default" {
     name    = "chips-firewall-${var.environment}"
     network = "default"
