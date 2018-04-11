@@ -29,11 +29,6 @@ jobs:
       - run:
           name: Update instance definition
           command: >-
-                     if [[ $CIRCLE_BRANCH = 'master' ]]; then
-                       sudo /opt/google-cloud-sdk/bin/gcloud beta compute instances update-container chips-staging \
-                         --container-image ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
-                     elif [[ $CIRCLE_BRANCH = 'release' ]]; then
-                       sudo /opt/google-cloud-sdk/bin/gcloud beta compute instances update-container chips-prod \
-                         --container-image ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
-                     fi
+                     sudo /opt/google-cloud-sdk/bin/gcloud beta compute instances update-container chips-staging \
+                       --container-image ${DOCKER_IMAGE_REPOSITORY}:${CIRCLE_SHA1}
 
