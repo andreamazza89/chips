@@ -15,7 +15,9 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./:/chips-app
+      - ./lib:/chips-app/lib
+      - ./test:/chips-app/test
+      - ./assets:/chips-app/assets
     working_dir: /chips-app
     depends_on:
       - postgres
