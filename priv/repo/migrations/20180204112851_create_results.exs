@@ -3,9 +3,9 @@ defmodule Chips.Repo.Migrations.CreateResults do
 
   def change do
     create table(:results) do
+      add :player_id, references(:users, on_delete: :nothing)
       add :prize, :integer
       add :tournament_id, references(:tournaments, on_delete: :nothing)
-      add :player_id, references(:users, on_delete: :nothing)
     end
 
     create index(:results, [:tournament_id])

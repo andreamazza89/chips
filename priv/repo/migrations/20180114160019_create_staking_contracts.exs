@@ -8,8 +8,6 @@ defmodule Chips.Repo.Migrations.CreateStakingContracts do
       add :staker_id, references(:users, on_delete: :nothing), null: false
       add :tournament_id, references(:tournaments, on_delete: :nothing), null: false
       add :player_id, references(:users, on_delete: :nothing), null: false
-
-      timestamps()
     end
 
     create index(:staking_contracts, [:tournament_id])

@@ -10,7 +10,12 @@ services:
     env_file: .development_environment_secrets.sh
     build:
       context: .
+    command: bash
+    stdin_open: true
     ports:
       - "8080:8080"
+    volumes:
+      - ./:/chips-app
+    working_dir: /chips-app
     depends_on:
       - postgres

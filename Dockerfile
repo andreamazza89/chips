@@ -22,7 +22,9 @@ RUN cd assets && \
 # Now use a much slimmer elixir base image to run the app on
 FROM elixir:alpine
 
-COPY --from=0 /chips-app .
+WORKDIR /chips-app
+
+COPY --from=0 /chips-app /chips-app
 
 # Fetch Elixir dependencies and compile
 RUN mix local.rebar --force

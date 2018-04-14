@@ -11,8 +11,6 @@ defmodule Chips.StakingContract do
     belongs_to :staker, Chips.User
     belongs_to :tournament, Chips.Tournament
     belongs_to :player, Chips.User
-
-    timestamps()
   end
 
   @doc false
