@@ -17,7 +17,7 @@ services:
     volumes:
       - ./lib:/chips-app/lib
       - ./test:/chips-app/test
-      - ./assets:/chips-app/assets
+      - ./priv/static/js:/chips-app/priv/static/js
     working_dir: /chips-app
     depends_on:
       - postgres
