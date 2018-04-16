@@ -1,5 +1,5 @@
 app_name         = "chips"
-db_instance_name = "chips-postgrello"
+db_instance_name = "chips-postgremio"
 db_name          = "chips"
 network_tag      = "chips-network"
 project_id       = "chips-194714"

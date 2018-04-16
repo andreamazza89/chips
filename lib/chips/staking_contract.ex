@@ -5,7 +5,7 @@ defmodule Chips.StakingContract do
 
 
   schema "staking_contracts" do
-    field :half_percents_sold, :integer
+    field :percents_sold, :float
     field :rate, :float
 
     belongs_to :staker, Chips.User
@@ -16,7 +16,7 @@ defmodule Chips.StakingContract do
   @doc false
   def changeset(%StakingContract{} = staking_contract, attrs) do
     staking_contract
-    |> cast(attrs, [:rate, :half_percents_sold])
-    |> validate_required([:rate, :half_percents_sold])
+    |> cast(attrs, [:rate, :percents_sold])
+    |> validate_required([:rate, :percents_sold])
   end
 end

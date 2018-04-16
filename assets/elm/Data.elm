@@ -38,7 +38,7 @@ type alias TournamentData =
 
 
 type alias StakingContractData =
-    { halfPercentsSold : Int
+    { percentsSold : Float
     , rate : Float
     , stakerId : String
     }
@@ -89,7 +89,7 @@ type TournamentSeriesFormData
 
 
 type StakingContractFormData
-    = HalfPercentsSold
+    = PercentsSold
     | Rate
     | StakerId
 
@@ -97,7 +97,7 @@ type StakingContractFormData
 type alias StakingContract =
     { rate : Float
     , staker : Staker
-    , halfPercentsSold : Int
+    , percentsSold : Float
     }
 
 

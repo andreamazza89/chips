@@ -57,7 +57,7 @@ defmodule ChipsWeb.Schema do
 		end
 
     field :create_staking_contract, type: list_of(:tournament_series) do
-      arg :half_percents_sold, non_null(:integer)
+      arg :percents_sold, non_null(:float)
       arg :rate, non_null(:float)
       arg :staker_id, non_null(:integer)
       arg :tournament_id, non_null(:integer)

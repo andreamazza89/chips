@@ -29,7 +29,7 @@ newResultRequestBody prize tournamentId playerId =
                         ++ ", playerId: \""
                         ++ playerId
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -57,7 +57,7 @@ newTournamentSeriesRequestBody city name =
                         ++ "\", name: \""
                         ++ name
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -72,7 +72,7 @@ createNewStakingContract model tournamentId =
             "/api"
             (newStakeContractRequestBody
                 model.formData.stakingContract.stakerId
-                model.formData.stakingContract.halfPercentsSold
+                model.formData.stakingContract.percentsSold
                 model.userId
                 model.formData.stakingContract.rate
                 tournamentId
@@ -80,14 +80,14 @@ createNewStakingContract model tournamentId =
             (graphQlDecoder "createStakingContract" (list tournamentSeriesDecoder))
 
 
-newStakeContractRequestBody : String -> Int -> String -> Float -> String -> Body
-newStakeContractRequestBody stakerId halfPercents userId rate tournamentId =
+newStakeContractRequestBody : String -> Float -> String -> Float -> String -> Body
+newStakeContractRequestBody stakerId percentsSold userId rate tournamentId =
     Http.jsonBody
         (Json.Encode.object
             [ ( "query"
               , Json.Encode.string
-                    ("mutation { createStakingContract(halfPercentsSold: "
-                        ++ toString halfPercents
+                    ("mutation { createStakingContract(percentsSold: "
+                        ++ toString percentsSold
                         ++ ", rate: "
                         ++ toString rate
                         ++ ", stakerId: "
@@ -97,7 +97,7 @@ newStakeContractRequestBody stakerId halfPercents userId rate tournamentId =
                         ++ ", playerId: "
                         ++ userId
                         ++ ")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -127,7 +127,7 @@ newTournamentRequestBody name feeInCents seriesId =
                         ++ ", tournamentSeriesId: \""
                         ++ seriesId
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { halfPercentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
                         ++ "}"
                     )
               )
@@ -171,7 +171,7 @@ tournamentSeriesesRequestBody =
                         ++ "city,"
                         ++ "id,"
                         ++ "name,"
-                        ++ " tournaments { feeInCents, name, id, result, stakingContracts { staker { name }, rate, halfPercentsSold } } } }"
+                        ++ " tournaments { feeInCents, name, id, result, stakingContracts { staker { name }, rate, percentsSold } } } }"
                     )
               )
             ]
@@ -233,7 +233,7 @@ stakingContractDecoder =
     map3 StakingContract
         (field "rate" float)
         (field "staker" stakerDecoder)
-        (field "halfPercentsSold" int)
+        (field "percentsSold" float)
 
 
 stakerDecoder : Json.Decode.Decoder Staker

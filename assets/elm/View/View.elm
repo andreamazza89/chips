@@ -125,9 +125,9 @@ newTournament series =
                     []
                 ]
             , label []
-                [ text "fee in cents"
+                [ text "fee"
                 , input
-                    [ name "fee in cents"
+                    [ name "fee"
                     , onInput <| SetFormData (SettTournament FeeInCents)
                     ]
                     []
@@ -155,8 +155,8 @@ viewStakingContract tournament stakingContract =
             (stakingContract.staker.name
                 ++ " | rate: "
                 ++ toString stakingContract.rate
-                ++ " | half_percents_sold: "
-                ++ toString stakingContract.halfPercentsSold
+                ++ " | percents_sold: "
+                ++ toString stakingContract.percentsSold
                 ++ " | cost: "
                 ++ formatContractCost stakingContract tournament.fee_in_cents
                 ++ formatContractWinnings tournament stakingContract
@@ -191,10 +191,10 @@ newStakerForm tournament =
                     []
                 ]
             , label []
-                [ text "half percents sold"
+                [ text "percents sold"
                 , input
-                    [ name "half-percents-sold"
-                    , onInput <| SetFormData (SettStakingContract HalfPercentsSold)
+                    [ name "percents-sold"
+                    , onInput <| SetFormData (SettStakingContract PercentsSold)
                     ]
                     []
                 ]

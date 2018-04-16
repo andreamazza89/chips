@@ -184,15 +184,15 @@ handleFormInput model formSpecifics userInput =
             in
                 ( { model | formData = newFormData }, Cmd.none )
 
-        SettStakingContract HalfPercentsSold ->
-            case (String.toInt userInput) of
-                Ok percentSold ->
+        SettStakingContract PercentsSold ->
+            case (String.toFloat userInput) of
+                Ok sold ->
                     let
                         existingStakingContractData =
                             model.formData.stakingContract
 
                         newStakingContractData =
-                            { existingStakingContractData | halfPercentsSold = percentSold }
+                            { existingStakingContractData | percentsSold = sold }
 
                         existingFormData =
                             model.formData
