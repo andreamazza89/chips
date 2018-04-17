@@ -32,17 +32,17 @@ resource "google_sql_user" "user" {
 }
 
 output "db_instance_name" {
-  value = "google_sql_database_instance.chips-catabase-instance.name"
+  value = "${google_sql_database_instance.chips-database-instance.name}"
 }
 
 output "db_name" {
-  value = "google_sql_database.chips-catabase.name"
+  value = "${google_sql_database.chips-database.name}"
 }
 
 output "db_user_name" {
-  value = "google_sql_user.user.name"
+  value = "${google_sql_user.user.name}"
 }
 
 output "db_password" {
-  value = "google_sql_user.user.password"
+  value = "${google_sql_user.user.password}"
 }
