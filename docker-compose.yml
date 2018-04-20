@@ -1,6 +1,12 @@
 version: '3'
 services:
-  postgres:
+  postgres-dev:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: dev-user
+      POSTGRES_PASSWORD: dev-password
+      POSTGRES_DB: chips-development
+  postgres-test:
     image: postgres:9.6
     environment:
       POSTGRES_USER: dev-user
@@ -21,4 +27,5 @@ services:
       - ./priv/repo:/chips-app/priv/repo
     working_dir: /chips-app
     depends_on:
-      - postgres
+      - postgres-dev
+      - postgres-test

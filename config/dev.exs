@@ -55,5 +55,5 @@ config :chips, Chips.Repo,
   username: System.get_env("DB_USER_NAME"),
   password: System.get_env("DB_PASSWORD"),
   database: System.get_env("DB_NAME"),
-  hostname: "postgres",
+  hostname: "postgres-dev",
   pool_size: 10

@@ -12,8 +12,8 @@ config :logger, level: :warn
 # Configure your database
 config :chips, Chips.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "andrea",
-  password: "",
-  database: "chips_test",
-  hostname: "localhost",
+  username: System.get_env("DB_USER_NAME"),
+  password: System.get_env("DB_PASSWORD"),
+  database: System.get_env("DB_NAME"),
+  hostname: "postgres-test",
   pool: Ecto.Adapters.SQL.Sandbox
