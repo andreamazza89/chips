@@ -1,5 +1,4 @@
 defmodule ChipsWeb.Resolvers.Data do
-
   import Chips.AccessData
   import Chips.ProcessData
 
@@ -13,6 +12,12 @@ defmodule ChipsWeb.Resolvers.Data do
 
   def list_users(_parent, _args, _resolution) do
     {:ok, list_users()}
+  end
+
+  def moneis_for_user(_parent, args, _resolution) do
+    {:ok,
+     moneis_for_user(args.user_id)
+     |> Enum.map(fn {user, balance} -> %{user: user, balance: balance} end)}
   end
 
   def create_result(_parent, args, _resolution) do
@@ -39,5 +44,4 @@ defmodule ChipsWeb.Resolvers.Data do
     create_staking_contract(args)
     {:ok, list_tournament_serieses() |> add_result_to_tournaments}
   end
-
 end

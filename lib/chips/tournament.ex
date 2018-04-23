@@ -3,15 +3,14 @@ defmodule Chips.Tournament do
   import Ecto.Changeset
   alias Chips.Tournament
 
-
   schema "tournaments" do
-    field :fee_in_cents, :integer
-    field :name, :string
-    field :starts, :naive_datetime
+    field(:fee_in_cents, :integer)
+    field(:name, :string)
+    field(:starts, :naive_datetime)
 
-    belongs_to :tournament_series, Chips.TournamentSeries
-    has_many :staking_contracts, Chips.StakingContract
-    has_many :results, Chips.Result
+    belongs_to(:tournament_series, Chips.TournamentSeries)
+    has_many(:staking_contracts, Chips.StakingContract)
+    has_many(:results, Chips.Result)
   end
 
   @doc false

@@ -1,6 +1,11 @@
 defmodule ChipsWeb.Schema.Types do
   use Absinthe.Schema.Notation
 
+  object :moneis do
+    field :user, :user
+    field :balance, :float
+  end
+
   object :staking_contract do
     field :id, :id
     field :percents_sold, :float
@@ -36,7 +41,13 @@ defmodule ChipsWeb.Schema.Types do
     field :name, :string
     field :email, :string
 
+    field :moneis, list_of(:moneis)
     field :tournaments, list_of(:tournament)
+  end
+
+  object :user_to_amount do
+    field :user, :user
+    field :amount, :integer
   end
 
 end

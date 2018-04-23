@@ -5,11 +5,16 @@ import Http exposing (..)
 
 type alias Model =
     { formData : FormData
+    , moneis : List Moneis
     , stuff : String
     , tournamentSerieses : List TournamentSeries
     , userId : String
     , users : List User
     }
+
+
+type alias Moneis =
+    { user : User, balance : Float }
 
 
 type alias FormData =
@@ -57,6 +62,7 @@ type Msg
     | CreateNewTournamentSeries
     | CreateNewUser
     | SetFormData Specifics String
+    | UpdateMoneisShown (Result Http.Error (List Moneis))
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
 

@@ -11,7 +11,7 @@ import Update exposing (update)
 main : Program Never Model Msg
 main =
     program
-        { init = ( initialState, batch [ fetchSerieses, fetchUsers ] )
+        { init = ( initialState, batch [ fetchMoneis, fetchSerieses, fetchUsers ] )
         , update = update
         , subscriptions = (always Sub.none)
         , view = view
@@ -22,6 +22,7 @@ initialState : Model
 initialState =
     { userId = "1"
     , formData = initialFormData
+    , moneis = []
     , stuff = "errors go here"
     , tournamentSerieses = []
     , users = []

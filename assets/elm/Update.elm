@@ -26,11 +26,27 @@ update msg model =
         SetFormData formSpecifics userInput ->
             handleFormInput model formSpecifics userInput
 
+        UpdateMoneisShown result ->
+            updateMoneisShown model result
+
         UpdateTournamentSeriesesShow result ->
             updateTournamentSeriesesShown model result
 
         UpdateUsersShown result ->
             updateUsersShown model result
+
+
+updateMoneisShown : Model -> Result Http.Error (List Moneis) -> ( Model, Cmd Msg )
+updateMoneisShown model result =
+    case result of
+        Ok new_moneis ->
+            ( { model | moneis = new_moneis }, Cmd.none )
+
+        Err (BadPayload message response) ->
+            ( { model | stuff = message }, Cmd.none )
+
+        Err _ ->
+            ( { model | stuff = "error fetching moneis" }, Cmd.none )
 
 
 updateTournamentSeriesesShown : Model -> Result Http.Error (List TournamentSeries) -> ( Model, Cmd Msg )

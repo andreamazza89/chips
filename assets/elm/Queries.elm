@@ -135,6 +135,23 @@ newTournamentRequestBody name feeInCents seriesId =
         )
 
 
+fetchMoneis : Cmd Msg
+fetchMoneis =
+    Http.send UpdateMoneisShown <|
+        Http.post
+            "/api"
+            moneisRequestBody
+            (graphQlDecoder "moneisForUser" (list moneisDecoder))
+
+
+moneisRequestBody : Body
+moneisRequestBody =
+    Http.jsonBody
+        (Json.Encode.object
+            [ ( "query", Json.Encode.string "query { moneisForUser(userId: 1) { user { id, name }, balance } }" ) ]
+        )
+
+
 fetchUsers : Cmd Msg
 fetchUsers =
     Http.send UpdateUsersShown <|
@@ -200,6 +217,13 @@ graphQlDecoder fieldName decoder =
     field "data" <|
         field fieldName <|
             decoder
+
+
+moneisDecoder : Json.Decode.Decoder Moneis
+moneisDecoder =
+    map2 Moneis
+        (field "user" userDecoder)
+        (field "balance" float)
 
 
 userDecoder : Json.Decode.Decoder User

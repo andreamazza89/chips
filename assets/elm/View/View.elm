@@ -11,10 +11,20 @@ view : Model -> Html Msg
 view model =
     div []
         [ text model.stuff
+        , moneis model
         , users model
         , newSeries
         , allSerieses model
         ]
+
+
+moneis : Model -> Html Msg
+moneis model =
+    div []
+        (List.map
+            (\monei -> p [] [ text (monei.user.name ++ " owes you: " ++ (toString monei.balance)) ])
+            model.moneis
+        )
 
 
 users : Model -> Html Msg
