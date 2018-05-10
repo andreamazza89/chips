@@ -40,3 +40,4 @@ elm-stuff
 *.tfstate
 *.tfstate.*
 
+.swp
