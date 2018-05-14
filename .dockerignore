@@ -1,3 +1,9 @@
 /assets/node_modules
 /priv/static
 _build
+
+# should probably figure out some sort of wildcard..
+/assets/elm-stuff
+/assets/elm/elm-stuff
+/assets/elm/src/elm-stuff
+/assets/elm/tests/elm-stuff

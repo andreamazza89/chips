@@ -19,6 +19,10 @@ RUN cd assets && \
   npm install && \
   ./node_modules/brunch/bin/brunch build
 
+# Run the tests
+RUN cd assets/elm && \
+  ../node_modules/elm-test/bin/elm-test --compiler ../node_modules/elm/binwrappers/elm-make
+
 # Now use a much slimmer elixir base image to run the app on
 FROM elixir:alpine
 
