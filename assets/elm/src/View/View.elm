@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Data exposing (..)
-import View.Helper exposing (formatContractCost, formatContractWinnings)
+import View.Helper exposing (formatContractCost, formatContractWinnings, formatMoney)
 
 
 view : Model -> Html Msg
@@ -22,7 +22,7 @@ moneis : Model -> Html Msg
 moneis model =
     div []
         (List.map
-            (\monei -> p [] [ text (monei.user.name ++ " owes you: " ++ (toString monei.balance)) ])
+            (\monei -> p [] [ text (monei.user.name ++ " owes you: " ++ (formatMoney (ceiling monei.balance))) ])
             model.moneis
         )
 
@@ -150,7 +150,7 @@ newTournament series =
 viewTournament : Tournament -> Html Msg
 viewTournament tournament =
     div [ class "tournament" ]
-        [ h4 [] [ text (tournament.name ++ " (" ++ toString (tournament.fee_in_cents) ++ ")") ]
+        [ h4 [] [ text (tournament.name ++ " (" ++ formatMoney tournament.fee_in_cents ++ ")") ]
         , ul [] (List.map (viewStakingContract tournament) tournament.stakingContracts)
         , newStakingContract tournament
         , viewTournamentResult tournament
@@ -225,7 +225,7 @@ viewTournamentResult : Tournament -> Html Msg
 viewTournamentResult tournament =
     case tournament.result of
         Just prize ->
-            h4 [] [ text ("you won " ++ toString (prize)) ]
+            h4 [] [ text ("you won " ++ formatMoney prize) ]
 
         Nothing ->
             div []
