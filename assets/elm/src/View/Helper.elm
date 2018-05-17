@@ -25,34 +25,19 @@ formatContractWinnings tournament stakingContract =
 formatMoney : Int -> String
 formatMoney totalPence =
     let
-        afterTheDot =
-            blah (abs totalPence)
-
         beforeTheDot =
             separateThousands ((abs totalPence) // 100)
 
-        isPositive =
-            totalPence >= 0
+        afterTheDot =
+            lastNDigits 2 (abs totalPence)
 
-        formattedAbsoluteMoney =
-            "$ " ++ beforeTheDot ++ "." ++ afterTheDot
+        sign =
+            if totalPence >= 0 then
+                ""
+            else
+                "-"
     in
-        if isPositive then
-            formattedAbsoluteMoney
-        else
-            "-" ++ formattedAbsoluteMoney
-
-
-blah : Int -> String
-blah total =
-    let
-        rawAfterTheDot =
-            rem total 100
-    in
-        if rawAfterTheDot == 0 then
-            "00"
-        else
-            toString rawAfterTheDot
+        sign ++ "$ " ++ beforeTheDot ++ "." ++ afterTheDot
 
 
 separateThousands : Int -> String
@@ -63,6 +48,25 @@ separateThousands total =
 doSeparateThousands : Int -> String -> String
 doSeparateThousands digitsLeft accumulator =
     if digitsLeft > 1000 then
-        doSeparateThousands (digitsLeft // 1000) ("," ++ (toString (rem digitsLeft 1000)) ++ accumulator)
+        let
+            newDigitsLeft =
+                (digitsLeft // 1000)
+
+            newAccumulator =
+                ("," ++ (lastNDigits 3 digitsLeft) ++ accumulator)
+        in
+            doSeparateThousands newDigitsLeft newAccumulator
     else
         (toString digitsLeft) ++ accumulator
+
+
+lastNDigits : Int -> Int -> String
+lastNDigits n fullNumber =
+    let
+        nDigits =
+            rem fullNumber (10 ^ n)
+    in
+        if nDigits == 0 then
+            String.repeat n "0"
+        else
+            toString (nDigits)

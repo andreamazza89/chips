@@ -10,9 +10,14 @@ suite =
     describe "Format money"
         [ test "easy" <|
             \_ ->
-                4242
+                5433
                     |> formatMoney
-                    |> Expect.equal "$ 42.42"
+                    |> Expect.equal "$ 54.33"
+        , test "not so easy" <|
+            \_ ->
+                3300000
+                    |> formatMoney
+                    |> Expect.equal "$ 33,000.00"
         , test "medium" <|
             \_ ->
                 90512345600
