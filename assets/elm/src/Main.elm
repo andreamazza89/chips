@@ -3,21 +3,27 @@ module Main exposing (..)
 import Platform.Cmd exposing (batch)
 import Data exposing (..)
 import Page.Foo as Foo
+import Page.Page as Page exposing (Page(..))
 import View.View exposing (view)
 import Queries exposing (..)
 import Update exposing (update)
 import Navigation exposing (Location, program)
-import Route exposing (spitMsgFromLocation)
+import Router exposing (locationToRoute)
 
 
 main : Program Never Model Msg
 main =
-    Navigation.program spitMsgFromLocation
+    Navigation.program locationToMessage
         { init = fromLocation
         , update = update
         , subscriptions = (always Sub.none)
         , view = view
         }
+
+
+locationToMessage : Location -> Msg
+locationToMessage location =
+    SetRoute (locationToRoute location)
 
 
 fromLocation : Location -> ( Model, Cmd Msg )
@@ -34,6 +40,7 @@ initialState =
     , stuff = "errors go here"
     , tournamentSerieses = []
     , users = []
+    , authenticatedUser = Nothing
     }
 
 

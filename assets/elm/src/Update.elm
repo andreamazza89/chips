@@ -4,6 +4,7 @@ import Http exposing (..)
 import Data exposing (..)
 import Queries exposing (..)
 import Page.Foo as Foo
+import Router exposing (resolve)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -30,11 +31,8 @@ update msg model =
         SetFormData formSpecifics userInput ->
             handleFormInput model formSpecifics userInput
 
-        SetRoute GoToOldPage ->
-            ( { model | currentPage = OldPage }, Cmd.none )
-
-        SetRoute GoToNewPage ->
-            ( { model | currentPage = Foo Foo.initialModel }, Cmd.none )
+        SetRoute route ->
+            ( { model | currentPage = Router.resolve route }, Cmd.none )
 
         UpdateMoneisShown result ->
             updateMoneisShown model result

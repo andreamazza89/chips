@@ -1,7 +1,9 @@
 module Data exposing (..)
 
 import Http exposing (..)
+import Page.Page exposing (Page(..))
 import Page.Foo as Foo
+import Router exposing (Route(..))
 
 
 type alias Model =
@@ -12,12 +14,15 @@ type alias Model =
     , userId : String
     , users : List User
     , currentPage : Page
+    , authenticatedUser : Maybe AuthenticatedUser
     }
 
 
-type Page
-    = Foo Foo.Model
-    | OldPage
+type alias AuthenticatedUser =
+    { email : String
+    , token : String
+    , userName : String
+    }
 
 
 type alias Moneis =
@@ -153,8 +158,3 @@ type alias PlayerId =
 
 type alias TournamentId =
     String
-
-
-type Route
-    = GoToOldPage
-    | GoToNewPage
