@@ -1,26 +1,34 @@
 module Main exposing (..)
 
-import Html exposing (program)
 import Platform.Cmd exposing (batch)
 import Data exposing (..)
+import Page.Foo as Foo
 import View.View exposing (view)
 import Queries exposing (..)
 import Update exposing (update)
+import Navigation exposing (Location, program)
+import Route exposing (spitMsgFromLocation)
 
 
 main : Program Never Model Msg
 main =
-    program
-        { init = ( initialState, batch [ fetchMoneis, fetchSerieses, fetchUsers ] )
+    Navigation.program spitMsgFromLocation
+        { init = fromLocation
         , update = update
         , subscriptions = (always Sub.none)
         , view = view
         }
 
 
+fromLocation : Location -> ( Model, Cmd Msg )
+fromLocation location =
+    ( initialState, batch [ fetchMoneis, fetchSerieses, fetchUsers ] )
+
+
 initialState : Model
 initialState =
     { userId = "1"
+    , currentPage = Foo Foo.initialModel
     , formData = initialFormData
     , moneis = []
     , stuff = "errors go here"

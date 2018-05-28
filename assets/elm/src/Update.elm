@@ -3,6 +3,7 @@ module Update exposing (update)
 import Http exposing (..)
 import Data exposing (..)
 import Queries exposing (..)
+import Page.Foo as Foo
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -23,8 +24,17 @@ update msg model =
         CreateNewTournamentSeries ->
             ( model, createTournamentSeries model )
 
+        FooMsg _ ->
+            ( model, Cmd.none )
+
         SetFormData formSpecifics userInput ->
             handleFormInput model formSpecifics userInput
+
+        SetRoute GoToOldPage ->
+            ( { model | currentPage = OldPage }, Cmd.none )
+
+        SetRoute GoToNewPage ->
+            ( { model | currentPage = Foo Foo.initialModel }, Cmd.none )
 
         UpdateMoneisShown result ->
             updateMoneisShown model result

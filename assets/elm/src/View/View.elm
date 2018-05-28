@@ -4,18 +4,26 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Data exposing (..)
+import Page.Foo as Foo exposing (view)
 import View.Helper exposing (formatContractCost, formatContractWinnings, formatMoney)
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ text model.stuff
-        , moneis model
-        , users model
-        , newSeries
-        , allSerieses model
-        ]
+    case model.currentPage of
+        OldPage ->
+            div []
+                [ text model.stuff
+                , a [ href "#/nothing" ] [ text "back to nothing" ]
+                , moneis model
+                , users model
+                , newSeries
+                , allSerieses model
+                ]
+
+        Foo fooState ->
+            Foo.view fooState
+                |> Html.map FooMsg
 
 
 moneis : Model -> Html Msg

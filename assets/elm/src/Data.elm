@@ -1,6 +1,7 @@
 module Data exposing (..)
 
 import Http exposing (..)
+import Page.Foo as Foo
 
 
 type alias Model =
@@ -10,7 +11,13 @@ type alias Model =
     , tournamentSerieses : List TournamentSeries
     , userId : String
     , users : List User
+    , currentPage : Page
     }
+
+
+type Page
+    = Foo Foo.Model
+    | OldPage
 
 
 type alias Moneis =
@@ -61,7 +68,9 @@ type Msg
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
+    | FooMsg Foo.Msg
     | SetFormData Specifics String
+    | SetRoute Route
     | UpdateMoneisShown (Result Http.Error (List Moneis))
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
@@ -138,9 +147,14 @@ type alias Tournament =
     }
 
 
+type alias PlayerId =
+    String
+
+
 type alias TournamentId =
     String
 
 
-type alias PlayerId =
-    String
+type Route
+    = GoToOldPage
+    | GoToNewPage
