@@ -3,7 +3,6 @@ module Update exposing (update)
 import Http exposing (..)
 import Data exposing (..)
 import Queries exposing (..)
-import Page.Foo as Foo
 import Router exposing (resolve)
 
 
@@ -32,7 +31,14 @@ update msg model =
             handleFormInput model formSpecifics userInput
 
         SetRoute route ->
-            ( { model | currentPage = Router.resolve route }, Cmd.none )
+            let
+                userExists =
+                    isSomething model.authenticatedUser
+
+                page =
+                    Router.resolve route userExists
+            in
+                ( { model | currentPage = page }, Cmd.none )
 
         UpdateMoneisShown result ->
             updateMoneisShown model result
@@ -42,6 +48,20 @@ update msg model =
 
         UpdateUsersShown result ->
             updateUsersShown model result
+
+
+
+-- please move me into some kind of util class soon maybe?
+
+
+isSomething : Maybe a -> Bool
+isSomething subject =
+    case subject of
+        Just _ ->
+            True
+
+        Nothing ->
+            False
 
 
 updateMoneisShown : Model -> Result Http.Error (List Moneis) -> ( Model, Cmd Msg )

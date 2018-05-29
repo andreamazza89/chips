@@ -2,7 +2,7 @@ module Data exposing (..)
 
 import Http exposing (..)
 import Page.Page exposing (Page(..))
-import Page.Foo as Foo
+import Page.Authentication as Auth
 import Router exposing (Route(..))
 
 
@@ -73,7 +73,7 @@ type Msg
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
-    | FooMsg Foo.Msg
+    | FooMsg Auth.Msg
     | SetFormData Specifics String
     | SetRoute Route
     | UpdateMoneisShown (Result Http.Error (List Moneis))

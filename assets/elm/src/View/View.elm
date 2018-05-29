@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Data exposing (..)
-import Page.Foo as Foo exposing (view)
+import Page.Authentication as Auth exposing (view)
 import Page.Page as Page exposing (Page(..))
 import View.Helper exposing (formatContractCost, formatContractWinnings, formatMoney)
 
@@ -22,8 +22,8 @@ view model =
                 , allSerieses model
                 ]
 
-        Foo fooState ->
-            Foo.view fooState
+        Authentication fooState ->
+            Auth.view fooState
                 |> Html.map FooMsg
 
 

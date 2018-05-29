@@ -1,4 +1,4 @@
-module Page.Foo exposing (Model, Msg, initialModel, view)
+module Page.Authentication exposing (Model, Msg, initialModel, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

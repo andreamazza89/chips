@@ -1,8 +1,8 @@
 module Page.Page exposing (Page(..))
 
-import Page.Foo as Foo
+import Page.Authentication as Auth
 
 
 type Page
-    = Foo Foo.Model
+    = Authentication Auth.Model
     | OldPage

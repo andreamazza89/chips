@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Platform.Cmd exposing (batch)
 import Data exposing (..)
-import Page.Foo as Foo
+import Page.Authentication as Auth
 import Page.Page as Page exposing (Page(..))
 import View.View exposing (view)
 import Queries exposing (..)
@@ -34,7 +34,7 @@ fromLocation location =
 initialState : Model
 initialState =
     { userId = "1"
-    , currentPage = Foo Foo.initialModel
+    , currentPage = Authentication Auth.initialModel
     , formData = initialFormData
     , moneis = []
     , stuff = "errors go here"
