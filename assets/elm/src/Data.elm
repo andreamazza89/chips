@@ -4,6 +4,7 @@ import Http exposing (..)
 import Page.Page exposing (Page(..))
 import Page.Authentication as Auth
 import Router exposing (Route(..))
+import User exposing (AuthenticatedUser)
 
 
 type alias Model =
@@ -15,13 +16,6 @@ type alias Model =
     , users : List User
     , currentPage : Page
     , authenticatedUser : Maybe AuthenticatedUser
-    }
-
-
-type alias AuthenticatedUser =
-    { email : String
-    , token : String
-    , userName : String
     }
 
 
@@ -73,7 +67,7 @@ type Msg
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
-    | FooMsg Auth.Msg
+    | AuthenticationMsg Auth.Msg
     | SetFormData Specifics String
     | SetRoute Route
     | UpdateMoneisShown (Result Http.Error (List Moneis))

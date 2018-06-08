@@ -7,6 +7,7 @@ import Data exposing (..)
 import Page.Authentication as Auth exposing (view)
 import Page.Page as Page exposing (Page(..))
 import View.Helper exposing (formatContractCost, formatContractWinnings, formatMoney)
+import User exposing (AuthenticatedUser)
 
 
 view : Model -> Html Msg
@@ -15,6 +16,7 @@ view model =
         OldPage ->
             div []
                 [ text model.stuff
+                , viewAuthenticatedUser model.authenticatedUser
                 , a [ href "#/nothing" ] [ text "back to nothing" ]
                 , moneis model
                 , users model
@@ -23,8 +25,21 @@ view model =
                 ]
 
         Authentication fooState ->
-            Auth.view fooState
-                |> Html.map FooMsg
+            div []
+                [ viewAuthenticatedUser model.authenticatedUser
+                , Auth.view fooState
+                    |> Html.map AuthenticationMsg
+                ]
+
+
+viewAuthenticatedUser : Maybe User.AuthenticatedUser -> Html Msg
+viewAuthenticatedUser user =
+    case user of
+        Just user ->
+            div [] [ text ("hello " ++ user.userName) ]
+
+        Nothing ->
+            div [] [ text "no user yet" ]
 
 
 moneis : Model -> Html Msg

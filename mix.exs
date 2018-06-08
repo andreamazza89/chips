@@ -42,7 +42,9 @@ defmodule Chips.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:absinthe, "~> 1.4"},
-      {:absinthe_plug, "~> 1.4"}
+      {:absinthe_plug, "~> 1.4"},
+      {:pbkdf2_elixir, "~> 0.12"},
+      {:guardian, "~> 1.0"}
     ]
   end
 

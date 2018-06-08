@@ -24,6 +24,7 @@ services:
       - ./lib:/chips-app/lib
       - ./test:/chips-app/test
       - ./priv/static/js:/chips-app/priv/static/js
+      - ./priv/static/css:/chips-app/priv/static/css
       - ./priv/repo:/chips-app/priv/repo
     working_dir: /chips-app
     depends_on:

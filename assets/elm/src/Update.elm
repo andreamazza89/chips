@@ -2,35 +2,46 @@ module Update exposing (update)
 
 import Http exposing (..)
 import Data exposing (..)
+import Page.Authentication as Auth
+import Page.Page exposing (Page(..))
 import Queries exposing (..)
 import Router exposing (resolve)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        CreateNewUser ->
+    case ( msg, model.currentPage ) of
+        ( CreateNewUser, _ ) ->
             ( model, createUser model.formData.user.name model.formData.user.email )
 
-        CreateNewResult tournamentId playerId ->
+        ( CreateNewResult tournamentId playerId, _ ) ->
             ( model, createResult model tournamentId playerId )
 
-        CreateNewStakingContract tournamentId ->
+        ( CreateNewStakingContract tournamentId, _ ) ->
             ( model, createNewStakingContract model tournamentId )
 
-        CreateNewTournament seriesId ->
+        ( CreateNewTournament seriesId, _ ) ->
             ( model, createTournament model seriesId )
 
-        CreateNewTournamentSeries ->
+        ( CreateNewTournamentSeries, _ ) ->
             ( model, createTournamentSeries model )
 
-        FooMsg _ ->
-            ( model, Cmd.none )
+        ( AuthenticationMsg subMsg, Authentication subModel ) ->
+            let
+                ( ( newSubModel, subCmd ), externalMsg ) =
+                    Auth.update ( subModel, subMsg )
+            in
+                case externalMsg of
+                    Auth.NoOp ->
+                        ( { model | currentPage = Authentication newSubModel }, Cmd.map AuthenticationMsg subCmd )
 
-        SetFormData formSpecifics userInput ->
+                    Auth.SetUser user ->
+                        ( { model | authenticatedUser = Just user, currentPage = OldPage }, Cmd.map AuthenticationMsg subCmd )
+
+        ( SetFormData formSpecifics userInput, _ ) ->
             handleFormInput model formSpecifics userInput
 
-        SetRoute route ->
+        ( SetRoute route, _ ) ->
             let
                 userExists =
                     isSomething model.authenticatedUser
@@ -40,14 +51,18 @@ update msg model =
             in
                 ( { model | currentPage = page }, Cmd.none )
 
-        UpdateMoneisShown result ->
+        ( UpdateMoneisShown result, _ ) ->
             updateMoneisShown model result
 
-        UpdateTournamentSeriesesShow result ->
+        ( UpdateTournamentSeriesesShow result, _ ) ->
             updateTournamentSeriesesShown model result
 
-        UpdateUsersShown result ->
+        ( UpdateUsersShown result, _ ) ->
             updateUsersShown model result
+
+        -- ignore messages from pages that are not the current one
+        ( _, _ ) ->
+            ( model, Cmd.none )
 
 
 

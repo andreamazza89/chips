@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Platform.Cmd exposing (batch)
-import Data exposing (..)
+import Data exposing (FormData, Model, Msg(..))
 import Page.Authentication as Auth
 import Page.Page as Page exposing (Page(..))
 import View.View exposing (view)
