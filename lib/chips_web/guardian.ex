@@ -13,4 +13,15 @@ defmodule ChipsWeb.Guardian do
   def auth_error(conn, {_type, _reason}, _opts) do
     resp(conn, 400, "failed to authenticate")
   end
+
+  def token_for_user(user) do
+    {:ok, jwt, _full_claims} =
+      ChipsWeb.Guardian.encode_and_sign(
+        user,
+        %{},
+        token_type: :token
+      )
+
+    jwt
+  end
 end
