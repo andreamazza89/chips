@@ -8,11 +8,17 @@ import Data exposing (..)
 
 createResult : Model -> TournamentId -> PlayerId -> Cmd Msg
 createResult model tournamentId playerId =
-    Http.send UpdateTournamentSeriesesShow <|
-        Http.post
-            "/api"
-            (newResultRequestBody model.formData.result.prize tournamentId playerId)
-            (graphQlDecoder "createResult" (list tournamentSeriesDecoder))
+    case model.authenticatedUser of
+        Just user ->
+            Http.send UpdateTournamentSeriesesShow <|
+                authenticatedRequest
+                    "/api"
+                    user.token
+                    (newResultRequestBody model.formData.result.prize tournamentId playerId)
+                    (graphQlDecoder "createResult" (list tournamentSeriesDecoder))
+
+        Nothing ->
+            Cmd.none
 
 
 newResultRequestBody : Int -> TournamentId -> PlayerId -> Body
@@ -39,11 +45,30 @@ newResultRequestBody prize tournamentId playerId =
 
 createTournamentSeries : Model -> Cmd Msg
 createTournamentSeries model =
-    Http.send UpdateTournamentSeriesesShow <|
-        Http.post
-            "/api"
-            (newTournamentSeriesRequestBody model.formData.tournamentSeries.city model.formData.tournamentSeries.name)
-            (graphQlDecoder "createTournamentSeries" (list tournamentSeriesDecoder))
+    case model.authenticatedUser of
+        Just user ->
+            Http.send UpdateTournamentSeriesesShow <|
+                authenticatedRequest
+                    "/api"
+                    user.token
+                    (newTournamentSeriesRequestBody model.formData.tournamentSeries.city model.formData.tournamentSeries.name)
+                    (graphQlDecoder "createTournamentSeries" (list tournamentSeriesDecoder))
+
+        Nothing ->
+            Cmd.none
+
+
+authenticatedRequest : String -> String -> Body -> Json.Decode.Decoder a -> Request a
+authenticatedRequest url token body decoder =
+    Http.request
+        { method = "POST"
+        , headers = [ Http.header "Authorization" ("Token " ++ token) ]
+        , url = url
+        , body = body
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
 
 
 newTournamentSeriesRequestBody : String -> String -> Body
@@ -67,17 +92,23 @@ newTournamentSeriesRequestBody city name =
 
 createNewStakingContract : Model -> TournamentId -> Cmd Msg
 createNewStakingContract model tournamentId =
-    Http.send UpdateTournamentSeriesesShow <|
-        Http.post
-            "/api"
-            (newStakeContractRequestBody
-                model.formData.stakingContract.stakerId
-                model.formData.stakingContract.percentsSold
-                model.userId
-                model.formData.stakingContract.rate
-                tournamentId
-            )
-            (graphQlDecoder "createStakingContract" (list tournamentSeriesDecoder))
+    case model.authenticatedUser of
+        Just user ->
+            Http.send UpdateTournamentSeriesesShow <|
+                authenticatedRequest
+                    "/api"
+                    user.token
+                    (newStakeContractRequestBody
+                        model.formData.stakingContract.stakerId
+                        model.formData.stakingContract.percentsSold
+                        model.userId
+                        model.formData.stakingContract.rate
+                        tournamentId
+                    )
+                    (graphQlDecoder "createStakingContract" (list tournamentSeriesDecoder))
+
+        Nothing ->
+            Cmd.none
 
 
 newStakeContractRequestBody : String -> Float -> String -> Float -> String -> Body
@@ -107,11 +138,17 @@ newStakeContractRequestBody stakerId percentsSold userId rate tournamentId =
 
 createTournament : Model -> SeriesId -> Cmd Msg
 createTournament model seriesId =
-    Http.send UpdateTournamentSeriesesShow <|
-        Http.post
-            "/api"
-            (newTournamentRequestBody model.formData.tournament.name model.formData.tournament.feeInCents seriesId)
-            (graphQlDecoder "createTournament" (list tournamentSeriesDecoder))
+    case model.authenticatedUser of
+        Just user ->
+            Http.send UpdateTournamentSeriesesShow <|
+                authenticatedRequest
+                    "/api"
+                    user.token
+                    (newTournamentRequestBody model.formData.tournament.name model.formData.tournament.feeInCents seriesId)
+                    (graphQlDecoder "createTournament" (list tournamentSeriesDecoder))
+
+        Nothing ->
+            Cmd.none
 
 
 newTournamentRequestBody : String -> Int -> SeriesId -> Body

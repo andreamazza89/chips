@@ -36,10 +36,10 @@ viewAuthenticatedUser : Maybe User.AuthenticatedUser -> Html Msg
 viewAuthenticatedUser user =
     case user of
         Just user ->
-            div [] [ text ("hello " ++ user.userName) ]
+            div [] [ text ("hello " ++ user.userName ++ ", you are logged in") ]
 
         Nothing ->
-            div [] [ text "no user yet" ]
+            div [] [ text "no user logged in" ]
 
 
 moneis : Model -> Html Msg
