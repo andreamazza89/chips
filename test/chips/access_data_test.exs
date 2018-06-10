@@ -8,16 +8,16 @@ defmodule Chips.AccessDataTest do
   end
 
   test "a new user has no debit/credit" do
-    {:ok, new_user} = create_user(%{name: "John", email: "asdf@bob.com"})
+    new_user = create_user_helper(%{user_name: "John"})
 
     assert moneis_for_user(new_user.id) == []
   end
 
   test "stakers Gigi and Viola back John and Mario in tournaments and owe them money for it" do
-    {:ok, player_john} = create_user(%{name: "John", email: "asdf@bob.com"})
-    {:ok, player_mario} = create_user(%{name: "Mario", email: "mario@rab.com"})
-    {:ok, staker_gigi} = create_user(%{name: "Gigi", email: "lol@cats.com"})
-    {:ok, staker_viola} = create_user(%{name: "Viola", email: "bla@blerg.com"})
+    player_john  = create_user_helper(%{user_name: "John"})
+    player_mario = create_user_helper(%{user_name: "Mario"})
+    staker_gigi  = create_user_helper(%{user_name: "Gigi"})
+    staker_viola = create_user_helper(%{user_name: "Viola"})
 
     {:ok, tournament_one} = create_tournament(%{name: "Best tourney eva", fee_in_cents: 200})
     {:ok, tournament_two} = create_tournament(%{name: "High roller", fee_in_cents: 11_111_100})
@@ -66,8 +66,8 @@ defmodule Chips.AccessDataTest do
   end
 
   test "Staker Gino backs Silvia, who wins a prize, so Silvia owes Gino " do
-    {:ok, player_silvia} = create_user(%{name: "Silvia", email: "silvia@rab.com"})
-    {:ok, staker_gino} = create_user(%{name: "Gino", email: "gino@cats.com"})
+    player_silvia = create_user_helper(%{user_name: "Silvia"})
+    staker_gino   = create_user_helper(%{user_name: "Gino"})
 
     {:ok, tournament} = create_tournament(%{name: "Best tourney eva", fee_in_cents: 100})
 
@@ -80,13 +80,19 @@ defmodule Chips.AccessDataTest do
         rate: 2
       })
 
-    {:ok, _tournament_result} = create_result(%{
+    {:ok, _tournament_result} =
+      create_result(%{
         tournament_id: tournament.id,
         player_id: player_silvia.id,
         prize: 1000
-    })
+      })
 
     moneis_for_silvia = moneis_for_user(player_silvia.id)
     assert moneis_for_silvia == [{staker_gino, -24}]
+  end
+
+  defp create_user_helper(%{user_name: user_name}) do
+    {:ok, user} = create_user(%{user_name: user_name, email: user_name <> "@a.b", password: "monkey"})
+    user
   end
 end

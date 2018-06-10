@@ -17,7 +17,6 @@ defmodule ChipsWeb.UserController do
         |> json(%{token: jwt, email: user.email, user_name: user.user_name})
 
       {:error, changeset} ->
-        IO.inspect(changeset)
         resp(conn, 400, "failed to create user")
     end
   end
@@ -31,6 +30,9 @@ defmodule ChipsWeb.UserController do
       )
 
     case Repo.one(find_user_query) do
+      nil ->
+        Pbkdf2.no_user_verify()
+        resp(conn, 400, "user not found or wrong password")
       user ->
         if Pbkdf2.verify_pass(password, user.password) do
         {:ok, jwt, _full_claims} =
@@ -40,10 +42,8 @@ defmodule ChipsWeb.UserController do
           |> put_status(200)
           |> json(%{token: jwt, email: user.email, user_name: user.user_name})
         else
-          IO.inspect("bad password")
+          resp(conn, 400, "user not found or wrong password")
         end
-      nil ->
-        IO.inspect("user does not exist")
     end
   end
 

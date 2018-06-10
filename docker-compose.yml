@@ -21,6 +21,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
+      - ./config:/chips-app/config
       - ./lib:/chips-app/lib
       - ./test:/chips-app/test
       - ./priv/static/js:/chips-app/priv/static/js

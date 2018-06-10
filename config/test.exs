@@ -17,3 +17,6 @@ config :chips, Chips.Repo,
   database: System.get_env("DB_NAME"),
   hostname: "postgres-test",
   pool: Ecto.Adapters.SQL.Sandbox
+
+# relax password hashing for testing
+config :pbkdf2_elixir, rounds: 1
