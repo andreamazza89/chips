@@ -128,7 +128,6 @@ view model =
                 ]
             , button [] [ text "submit" ]
             ]
-        , a [ href "#/ciao" ] [ text "back to reality" ]
         ]
 
 

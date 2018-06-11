@@ -28,7 +28,12 @@ locationToMessage location =
 
 fromLocation : Location -> ( Model, Cmd Msg )
 fromLocation location =
-    ( initialState, batch [ fetchMoneis, fetchSerieses, fetchUsers ] )
+    ( initialState, batch [ fetchMoneis, fetchSerieses, fetchUsers, goToLoginPage ] )
+
+
+goToLoginPage : Cmd Msg
+goToLoginPage =
+    Navigation.newUrl "#/authentication"
 
 
 initialState : Model

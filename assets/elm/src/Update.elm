@@ -2,6 +2,7 @@ module Update exposing (update)
 
 import Http exposing (..)
 import Data exposing (..)
+import Navigation exposing (..)
 import Page.Authentication as Auth
 import Page.Page exposing (Page(..))
 import Queries exposing (..)
@@ -36,7 +37,7 @@ update msg model =
                         ( { model | currentPage = Authentication newSubModel }, Cmd.map AuthenticationMsg subCmd )
 
                     Auth.SetUser user ->
-                        ( { model | authenticatedUser = Just user, currentPage = OldPage }, Cmd.map AuthenticationMsg subCmd )
+                        ( { model | authenticatedUser = Just user }, Navigation.newUrl "#/marketplace" )
 
         ( SetFormData formSpecifics userInput, _ ) ->
             handleFormInput model formSpecifics userInput

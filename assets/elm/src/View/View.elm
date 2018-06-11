@@ -13,22 +13,27 @@ import User exposing (AuthenticatedUser)
 view : Model -> Html Msg
 view model =
     case model.currentPage of
+        Authentication authState ->
+            div []
+                [ viewAuthenticatedUser model.authenticatedUser
+                , Auth.view authState
+                    |> Html.map AuthenticationMsg
+                ]
+
+        MarketPlace marketState ->
+            div []
+                [ viewAuthenticatedUser model.authenticatedUser
+                , text "placeholder for the thing"
+                ]
+
         OldPage ->
             div []
                 [ text model.stuff
                 , viewAuthenticatedUser model.authenticatedUser
-                , a [ href "#/nothing" ] [ text "back to nothing" ]
                 , moneis model
                 , users model
                 , newSeries
                 , allSerieses model
-                ]
-
-        Authentication fooState ->
-            div []
-                [ viewAuthenticatedUser model.authenticatedUser
-                , Auth.view fooState
-                    |> Html.map AuthenticationMsg
                 ]
 
 

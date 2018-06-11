@@ -1,6 +1,7 @@
 module Router exposing (Route(..), resolve, locationToRoute)
 
 import Page.Authentication as Auth
+import Page.MarketPlace as Market
 import Page.Page as Page exposing (Page(..))
 import Navigation exposing (Location, program)
 
@@ -15,7 +16,7 @@ resolve route userIsAuthenticated =
     if userIsAuthenticated then
         case route of
             GoToOldPage ->
-                OldPage
+                MarketPlace Market.initialModel
 
             GoToNewPage ->
                 Authentication Auth.initialModel
@@ -25,7 +26,7 @@ resolve route userIsAuthenticated =
 
 locationToRoute : Location -> Route
 locationToRoute location =
-    if location.hash == "#/ciao" then
+    if location.hash == "#/marketplace" then
         GoToOldPage
     else
         GoToNewPage
