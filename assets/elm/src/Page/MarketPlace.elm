@@ -11,7 +11,9 @@ import User exposing (AuthenticatedUser)
 
 
 type alias Model =
-    { formData : FormData
+    { actionDollars : Int
+    , actionMarkup : Float
+    , formData : FormData
     , moneis : List Moneis
     , stuff : String
     , tournamentSerieses : List TournamentSeries
@@ -59,12 +61,15 @@ type alias TournamentSeriesData =
 
 
 type Msg
-    = CreateNewResult TournamentId PlayerId
+    = CreateActionSale String
+    | CreateNewResult TournamentId PlayerId
     | CreateNewStakingContract TournamentId
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
     | SetFormData Specifics String
+    | SetActionDollars String
+    | SetActionMarkup String
     | UpdateMoneisShown (Result Http.Error (List Moneis))
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
@@ -159,7 +164,9 @@ type alias Moneis =
 
 initialModel : Model
 initialModel =
-    { userId = "1"
+    { actionDollars = 0
+    , actionMarkup = 0
+    , userId = "1"
     , formData = initialFormData
     , moneis = []
     , stuff = "errors go here"
@@ -222,6 +229,9 @@ initialFormData =
 update : Maybe AuthenticatedUser -> ( Model, Msg ) -> ( ( Model, Cmd Msg ), ExternalMsg )
 update user ( model, msg ) =
     case msg of
+        CreateActionSale tournamentId ->
+            ( ( model, createActionSaleRequest model user tournamentId ), NoOp )
+
         CreateNewResult tournamentId playerId ->
             ( ( model, createResult model user tournamentId playerId ), NoOp )
 
@@ -234,14 +244,69 @@ update user ( model, msg ) =
         CreateNewTournamentSeries ->
             ( ( model, createTournamentSeries model user ), NoOp )
 
+        SetActionDollars input ->
+            case String.toInt input of
+                Ok dollars ->
+                    ( ( { model | actionDollars = dollars }, Cmd.none ), NoOp )
+
+                Err msg ->
+                    ( ( { model | stuff = msg }, Cmd.none ), NoOp )
+
+        SetActionMarkup input ->
+            case String.toFloat input of
+                Ok markup ->
+                    ( ( { model | actionMarkup = markup }, Cmd.none ), NoOp )
+
+                Err msg ->
+                    ( ( { model | stuff = msg }, Cmd.none ), NoOp )
+
         SetFormData formSpecifics userInput ->
             ( handleFormInput model formSpecifics userInput, NoOp )
 
         UpdateTournamentSeriesesShow result ->
             ( updateTournamentSeriesesShown model result, NoOp )
 
+        -- remove this catchall once cleaned up the old stuff
         _ ->
             ( ( model, Cmd.none ), NoOp )
+
+
+createActionSaleRequest : Model -> Maybe AuthenticatedUser -> String -> Cmd Msg
+createActionSaleRequest model authenticatedUser tournamentId =
+    case authenticatedUser of
+        Just user ->
+            Http.send UpdateTournamentSeriesesShow <|
+                authenticatedRequest
+                    "/api"
+                    user.token
+                    (createActionSaleRequestBody user.userName tournamentId model.actionDollars model.actionMarkup)
+                    (graphQlDecoder "createResult" (Json.Decode.list tournamentSeriesDecoder))
+
+        Nothing ->
+            Cmd.none
+
+
+createActionSaleRequestBody : String -> String -> Int -> Float -> Body
+createActionSaleRequestBody userName tournamentId dollars markup =
+    Http.jsonBody
+        (Json.Encode.object
+            [ ( "query"
+              , Json.Encode.string
+                    ("mutation { createActionSale(tournamentId: "
+                        ++ tournamentId
+                        ++ ", unitsSold: "
+                        ++ toString dollars
+                        ++ ", markup: "
+                        ++ toString markup
+                        ++ ", playerName: \""
+                        ++ userName
+                        ++ "\")"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
+                        ++ "}"
+                    )
+              )
+            ]
+        )
 
 
 createResult : Model -> Maybe AuthenticatedUser -> TournamentId -> PlayerId -> Cmd Msg
@@ -466,11 +531,41 @@ newTournament series =
 viewTournament : Tournament -> Html Msg
 viewTournament tournament =
     div [ class "tournament" ]
-        [ h4 [] [ text (tournament.name ++ " (" ++ formatMoney tournament.fee_in_cents ++ ")") ]
-        , ul [] (List.map (viewStakingContract tournament) tournament.stakingContracts)
-        , newStakingContract tournament
-        , viewTournamentResult tournament
+        [ tournamentHeader tournament
+        , createActionSale tournament.id
         , br [] []
+        ]
+
+
+tournamentHeader : Tournament -> Html Msg
+tournamentHeader tournament =
+    h4 [] [ text (tournament.name ++ " (" ++ formatMoney tournament.fee_in_cents ++ ")") ]
+
+
+createActionSale : String -> Html Msg
+createActionSale tournamentId =
+    div []
+        [ text "sell action"
+        , Html.form
+            [ onSubmit (CreateActionSale tournamentId) ]
+            [ label []
+                [ text "Dollars"
+                , input
+                    [ name "dollars"
+                    , onInput <| SetActionDollars
+                    ]
+                    []
+                ]
+            , label []
+                [ text "Markup"
+                , input
+                    [ name "markup"
+                    , onInput <| SetActionMarkup
+                    ]
+                    []
+                ]
+            , button [] [ text "submit" ]
+            ]
         ]
 
 
