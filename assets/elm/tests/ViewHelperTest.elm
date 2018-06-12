@@ -2,7 +2,7 @@ module ViewHelperTest exposing (..)
 
 import Expect exposing (Expectation)
 import Test exposing (..)
-import View.Helper exposing (formatMoney)
+import Page.MarketPlace exposing (formatMoney)
 
 
 suite : Test

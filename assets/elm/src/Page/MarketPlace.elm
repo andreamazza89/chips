@@ -1,4 +1,4 @@
-module Page.MarketPlace exposing (Model, Msg, initialCmd, initialModel, view, update)
+module Page.MarketPlace exposing (Model, Msg, formatMoney, initialCmd, initialModel, view, update)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
