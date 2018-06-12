@@ -1,11 +1,10 @@
 module Main exposing (..)
 
 import Platform.Cmd exposing (batch)
-import Data exposing (FormData, Model, Msg(..))
+import Data exposing (Model, Msg(..))
 import Page.Authentication as Auth
 import Page.Page as Page exposing (Page(..))
 import View.View exposing (view)
-import Queries exposing (..)
 import Update exposing (update)
 import Navigation exposing (Location, program)
 import Router exposing (locationToRoute)
@@ -28,7 +27,7 @@ locationToMessage location =
 
 fromLocation : Location -> ( Model, Cmd Msg )
 fromLocation location =
-    ( initialState, batch [ fetchMoneis, fetchSerieses, fetchUsers, goToLoginPage ] )
+    ( initialState, goToLoginPage )
 
 
 goToLoginPage : Cmd Msg
@@ -38,22 +37,6 @@ goToLoginPage =
 
 initialState : Model
 initialState =
-    { userId = "1"
+    { authenticatedUser = Nothing
     , currentPage = Authentication Auth.initialModel
-    , formData = initialFormData
-    , moneis = []
-    , stuff = "errors go here"
-    , tournamentSerieses = []
-    , users = []
-    , authenticatedUser = Nothing
-    }
-
-
-initialFormData : FormData
-initialFormData =
-    { result = { prize = 0 }
-    , stakingContract = { percentsSold = 0, rate = 0, stakerId = "" }
-    , tournament = { name = "", feeInCents = 0 }
-    , tournamentSeries = { city = "", name = "" }
-    , user = { name = "", email = "" }
     }

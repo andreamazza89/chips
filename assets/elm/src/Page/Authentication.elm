@@ -1,4 +1,4 @@
-module Page.Authentication exposing (ExternalMsg(..), Model, Msg(..), createUserRequest, initialModel, update, view)
+module Page.Authentication exposing (ExternalMsg(..), Model, Msg(..), createUserRequest, initialCmd, initialModel, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -189,3 +189,8 @@ loginUserRequestBody { password, userName } =
             , ( "user_name", Json.Encode.string userName )
             ]
         )
+
+
+initialCmd : Cmd Msg
+initialCmd =
+    Cmd.none

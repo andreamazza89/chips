@@ -1,4 +1,4 @@
-module Page.MarketPlace exposing (Model, Msg, initialModel, view, update)
+module Page.MarketPlace exposing (Model, Msg, initialCmd, initialModel, view, update)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -166,6 +166,47 @@ initialModel =
     , tournamentSerieses = []
     , users = []
     }
+
+
+
+-- need to change so that the main Update only hits this when there is a user
+
+
+initialCmd : Maybe AuthenticatedUser -> Cmd Msg
+initialCmd authenticatedUser =
+    case authenticatedUser of
+        Just user ->
+            fetchSerieses user.token
+
+        Nothing ->
+            Cmd.none
+
+
+fetchSerieses : String -> Cmd Msg
+fetchSerieses token =
+    Http.send UpdateTournamentSeriesesShow <|
+        authenticatedRequest
+            "/api"
+            token
+            tournamentSeriesesRequestBody
+            (graphQlDecoder "tournamentSerieses" (Json.Decode.list tournamentSeriesDecoder))
+
+
+tournamentSeriesesRequestBody : Body
+tournamentSeriesesRequestBody =
+    Http.jsonBody
+        (Json.Encode.object
+            [ ( "query"
+              , Json.Encode.string
+                    ("query { tournamentSerieses {"
+                        ++ "city,"
+                        ++ "id,"
+                        ++ "name,"
+                        ++ " tournaments { feeInCents, name, id, result, stakingContracts { staker { name }, rate, percentsSold } } } }"
+                    )
+              )
+            ]
+        )
 
 
 initialFormData : FormData
