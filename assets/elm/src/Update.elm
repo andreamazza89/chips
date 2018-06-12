@@ -4,29 +4,14 @@ import Http exposing (..)
 import Data exposing (..)
 import Navigation exposing (..)
 import Page.Authentication as Auth
+import Page.MarketPlace as Market
 import Page.Page exposing (Page(..))
-import Queries exposing (..)
 import Router exposing (resolve)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( msg, model.currentPage ) of
-        ( CreateNewUser, _ ) ->
-            ( model, createUser model.formData.user.name model.formData.user.email )
-
-        ( CreateNewResult tournamentId playerId, _ ) ->
-            ( model, createResult model tournamentId playerId )
-
-        ( CreateNewStakingContract tournamentId, _ ) ->
-            ( model, createNewStakingContract model tournamentId )
-
-        ( CreateNewTournament seriesId, _ ) ->
-            ( model, createTournament model seriesId )
-
-        ( CreateNewTournamentSeries, _ ) ->
-            ( model, createTournamentSeries model )
-
         ( AuthenticationMsg subMsg, Authentication subModel ) ->
             let
                 ( ( newSubModel, subCmd ), externalMsg ) =
@@ -39,8 +24,12 @@ update msg model =
                     Auth.SetUser user ->
                         ( { model | authenticatedUser = Just user }, Navigation.newUrl "#/marketplace" )
 
-        ( SetFormData formSpecifics userInput, _ ) ->
-            handleFormInput model formSpecifics userInput
+        ( MarketPlaceMsg subMsg, MarketPlace subModel ) ->
+            let
+                ( ( newSubModel, subCmd ), externalMsg ) =
+                    Market.update model.authenticatedUser ( subModel, subMsg )
+            in
+                ( { model | currentPage = MarketPlace newSubModel }, Cmd.map MarketPlaceMsg subCmd )
 
         ( SetRoute route, _ ) ->
             let
@@ -51,15 +40,6 @@ update msg model =
                     Router.resolve route userExists
             in
                 ( { model | currentPage = page }, Cmd.none )
-
-        ( UpdateMoneisShown result, _ ) ->
-            updateMoneisShown model result
-
-        ( UpdateTournamentSeriesesShow result, _ ) ->
-            updateTournamentSeriesesShown model result
-
-        ( UpdateUsersShown result, _ ) ->
-            updateUsersShown model result
 
         -- ignore messages from pages that are not the current one
         ( _, _ ) ->

@@ -3,6 +3,7 @@ module Data exposing (..)
 import Http exposing (..)
 import Page.Page exposing (Page(..))
 import Page.Authentication as Auth
+import Page.MarketPlace as Market
 import Router exposing (Route(..))
 import User exposing (AuthenticatedUser)
 
@@ -68,6 +69,7 @@ type Msg
     | CreateNewTournamentSeries
     | CreateNewUser
     | AuthenticationMsg Auth.Msg
+    | MarketPlaceMsg Market.Msg
     | SetFormData Specifics String
     | SetRoute Route
     | UpdateMoneisShown (Result Http.Error (List Moneis))

@@ -62,7 +62,7 @@ update ( model, msg ) =
             ( ( { model | error = Just message }, Cmd.none ), NoOp )
 
         UserCreated (Err _) ->
-            ( ( { model | error = Just "smthng went wrong" }, Cmd.none ), NoOp )
+            ( ( { model | error = Just "something went wrong" }, Cmd.none ), NoOp )
 
         UserLoggedIn (Ok authenticatedUser) ->
             ( ( initialModel, Cmd.none ), SetUser authenticatedUser )
@@ -71,7 +71,7 @@ update ( model, msg ) =
             ( ( { model | error = Just message }, Cmd.none ), NoOp )
 
         UserLoggedIn (Err _) ->
-            ( ( { model | error = Just "smthng went wrong" }, Cmd.none ), NoOp )
+            ( ( { model | error = Just "something went wrong" }, Cmd.none ), NoOp )
 
 
 view : Model -> Html Msg
