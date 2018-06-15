@@ -50,6 +50,15 @@ defmodule ChipsWeb.Schema do
       resolve(&Resolvers.Data.create_tournament/3)
     end
 
+    # the user reference for the sale is extracted from the token
+    field :create_action_sale, type: list_of(:tournament_series) do
+      arg(:tournament_id, non_null(:string))
+      arg(:units_on_sale, non_null(:integer))
+      arg(:markup, non_null(:float))
+
+      resolve(&Resolvers.Data.create_action_sale/3)
+    end
+
     field :create_user, type: list_of(:user) do
       arg(:email, non_null(:string))
       arg(:name, non_null(:string))

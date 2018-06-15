@@ -14,17 +14,13 @@ type alias Model =
     { actionDollars : Int
     , actionMarkup : Float
     , formData : FormData
-    , moneis : List Moneis
     , stuff : String
     , tournamentSerieses : List TournamentSeries
-    , userId : String
-    , users : List User
     }
 
 
 type alias FormData =
     { result : ResultData
-    , stakingContract : StakingContractData
     , tournament : TournamentData
     , tournamentSeries : TournamentSeriesData
     , user : UserData
@@ -47,13 +43,6 @@ type alias TournamentData =
     }
 
 
-type alias StakingContractData =
-    { percentsSold : Float
-    , rate : Float
-    , stakerId : String
-    }
-
-
 type alias TournamentSeriesData =
     { city : String
     , name : String
@@ -63,14 +52,12 @@ type alias TournamentSeriesData =
 type Msg
     = CreateActionSale String
     | CreateNewResult TournamentId PlayerId
-    | CreateNewStakingContract TournamentId
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
     | SetFormData Specifics String
     | SetActionDollars String
     | SetActionMarkup String
-    | UpdateMoneisShown (Result Http.Error (List Moneis))
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
 
@@ -81,7 +68,6 @@ type ExternalMsg
 
 type Specifics
     = SettResult ResultFormData
-    | SettStakingContract StakingContractFormData
     | SettTournament TournamentFormData
     | SettTournamentSeries TournamentSeriesFormData
     | SettUser UserFormData
@@ -106,16 +92,10 @@ type TournamentSeriesFormData
     | SeriesName
 
 
-type StakingContractFormData
-    = PercentsSold
-    | Rate
-    | StakerId
-
-
-type alias StakingContract =
-    { rate : Float
-    , staker : Staker
-    , percentsSold : Float
+type alias ActionSale =
+    { user_name : String
+    , units_on_sale : Int
+    , markup : Float
     }
 
 
@@ -146,7 +126,7 @@ type alias Tournament =
     , fee_in_cents : Int
     , name : String
     , result : Maybe Int
-    , stakingContracts : List StakingContract
+    , actionSales : List ActionSale
     }
 
 
@@ -158,35 +138,19 @@ type alias TournamentId =
     String
 
 
-type alias Moneis =
-    { user : User, balance : Float }
-
-
 initialModel : Model
 initialModel =
     { actionDollars = 0
     , actionMarkup = 0
-    , userId = "1"
     , formData = initialFormData
-    , moneis = []
     , stuff = "errors go here"
     , tournamentSerieses = []
-    , users = []
     }
 
 
-
--- need to change so that the main Update only hits this when there is a user
-
-
-initialCmd : Maybe AuthenticatedUser -> Cmd Msg
-initialCmd authenticatedUser =
-    case authenticatedUser of
-        Just user ->
-            fetchSerieses user.token
-
-        Nothing ->
-            Cmd.none
+initialCmd : AuthenticatedUser -> Cmd Msg
+initialCmd user =
+    fetchSerieses user.token
 
 
 fetchSerieses : String -> Cmd Msg
@@ -209,7 +173,7 @@ tournamentSeriesesRequestBody =
                         ++ "city,"
                         ++ "id,"
                         ++ "name,"
-                        ++ " tournaments { feeInCents, name, id, result, stakingContracts { staker { name }, rate, percentsSold } } } }"
+                        ++ " tournaments { feeInCents, name, id, result, actionSales { markup, units_on_sale, user_name } } } }"
                     )
               )
             ]
@@ -219,14 +183,13 @@ tournamentSeriesesRequestBody =
 initialFormData : FormData
 initialFormData =
     { result = { prize = 0 }
-    , stakingContract = { percentsSold = 0, rate = 0, stakerId = "" }
     , tournament = { name = "", feeInCents = 0 }
     , tournamentSeries = { city = "", name = "" }
     , user = { name = "", email = "" }
     }
 
 
-update : Maybe AuthenticatedUser -> ( Model, Msg ) -> ( ( Model, Cmd Msg ), ExternalMsg )
+update : AuthenticatedUser -> ( Model, Msg ) -> ( ( Model, Cmd Msg ), ExternalMsg )
 update user ( model, msg ) =
     case msg of
         CreateActionSale tournamentId ->
@@ -234,9 +197,6 @@ update user ( model, msg ) =
 
         CreateNewResult tournamentId playerId ->
             ( ( model, createResult model user tournamentId playerId ), NoOp )
-
-        CreateNewStakingContract tournamentId ->
-            ( ( model, createNewStakingContract model user tournamentId ), NoOp )
 
         CreateNewTournament seriesId ->
             ( ( model, createTournament model user seriesId ), NoOp )
@@ -271,37 +231,30 @@ update user ( model, msg ) =
             ( ( model, Cmd.none ), NoOp )
 
 
-createActionSaleRequest : Model -> Maybe AuthenticatedUser -> String -> Cmd Msg
-createActionSaleRequest model authenticatedUser tournamentId =
-    case authenticatedUser of
-        Just user ->
-            Http.send UpdateTournamentSeriesesShow <|
-                authenticatedRequest
-                    "/api"
-                    user.token
-                    (createActionSaleRequestBody user.userName tournamentId model.actionDollars model.actionMarkup)
-                    (graphQlDecoder "createResult" (Json.Decode.list tournamentSeriesDecoder))
-
-        Nothing ->
-            Cmd.none
+createActionSaleRequest : Model -> AuthenticatedUser -> String -> Cmd Msg
+createActionSaleRequest model user tournamentId =
+    Http.send UpdateTournamentSeriesesShow <|
+        authenticatedRequest
+            "/api"
+            user.token
+            (createActionSaleRequestBody tournamentId model.actionDollars model.actionMarkup)
+            (graphQlDecoder "createActionSale" (Json.Decode.list tournamentSeriesDecoder))
 
 
-createActionSaleRequestBody : String -> String -> Int -> Float -> Body
-createActionSaleRequestBody userName tournamentId dollars markup =
+createActionSaleRequestBody : String -> Int -> Float -> Body
+createActionSaleRequestBody tournamentId dollars markup =
     Http.jsonBody
         (Json.Encode.object
             [ ( "query"
               , Json.Encode.string
-                    ("mutation { createActionSale(tournamentId: "
+                    ("mutation { createActionSale(tournamentId: \""
                         ++ tournamentId
-                        ++ ", unitsSold: "
+                        ++ "\", unitsOnSale: "
                         ++ toString dollars
                         ++ ", markup: "
                         ++ toString markup
-                        ++ ", playerName: \""
-                        ++ userName
-                        ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
+                        ++ ")"
+                        ++ "{ id, name, city, tournaments { feeInCents, name, id, result, actionSales { markup, units_on_sale, user_name } } }"
                         ++ "}"
                     )
               )
@@ -309,19 +262,14 @@ createActionSaleRequestBody userName tournamentId dollars markup =
         )
 
 
-createResult : Model -> Maybe AuthenticatedUser -> TournamentId -> PlayerId -> Cmd Msg
+createResult : Model -> AuthenticatedUser -> TournamentId -> PlayerId -> Cmd Msg
 createResult model user tournamentId playerId =
-    case user of
-        Just user ->
-            Http.send UpdateTournamentSeriesesShow <|
-                authenticatedRequest
-                    "/api"
-                    user.token
-                    (newResultRequestBody model.formData.result.prize tournamentId playerId)
-                    (graphQlDecoder "createResult" (Json.Decode.list tournamentSeriesDecoder))
-
-        Nothing ->
-            Cmd.none
+    Http.send UpdateTournamentSeriesesShow <|
+        authenticatedRequest
+            "/api"
+            user.token
+            (newResultRequestBody model.formData.result.prize tournamentId playerId)
+            (graphQlDecoder "createResult" (Json.Decode.list tournamentSeriesDecoder))
 
 
 newResultRequestBody : Int -> TournamentId -> PlayerId -> Body
@@ -338,53 +286,7 @@ newResultRequestBody prize tournamentId playerId =
                         ++ ", playerId: \""
                         ++ playerId
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
-                        ++ "}"
-                    )
-              )
-            ]
-        )
-
-
-createNewStakingContract : Model -> Maybe AuthenticatedUser -> TournamentId -> Cmd Msg
-createNewStakingContract model user tournamentId =
-    case user of
-        Just user ->
-            Http.send UpdateTournamentSeriesesShow <|
-                authenticatedRequest
-                    "/api"
-                    user.token
-                    (newStakeContractRequestBody
-                        model.formData.stakingContract.stakerId
-                        model.formData.stakingContract.percentsSold
-                        model.userId
-                        model.formData.stakingContract.rate
-                        tournamentId
-                    )
-                    (graphQlDecoder "createStakingContract" (Json.Decode.list tournamentSeriesDecoder))
-
-        Nothing ->
-            Cmd.none
-
-
-newStakeContractRequestBody : String -> Float -> String -> Float -> String -> Body
-newStakeContractRequestBody stakerId percentsSold userId rate tournamentId =
-    Http.jsonBody
-        (Json.Encode.object
-            [ ( "query"
-              , Json.Encode.string
-                    ("mutation { createStakingContract(percentsSold: "
-                        ++ toString percentsSold
-                        ++ ", rate: "
-                        ++ toString rate
-                        ++ ", stakerId: "
-                        ++ stakerId
-                        ++ ", tournamentId: "
-                        ++ tournamentId
-                        ++ ", playerId: "
-                        ++ userId
-                        ++ ")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result } }"
                         ++ "}"
                     )
               )
@@ -428,15 +330,15 @@ tournamentDecoder =
         (field "feeInCents" Json.Decode.int)
         (field "name" Json.Decode.string)
         (field "result" (maybe Json.Decode.int))
-        (field "stakingContracts" (Json.Decode.list stakingContractDecoder))
+        (field "actionSales" (Json.Decode.list actionSaleDecoder))
 
 
-stakingContractDecoder : Json.Decode.Decoder StakingContract
-stakingContractDecoder =
-    map3 StakingContract
-        (field "rate" Json.Decode.float)
-        (field "staker" stakerDecoder)
-        (field "percentsSold" Json.Decode.float)
+actionSaleDecoder : Json.Decode.Decoder ActionSale
+actionSaleDecoder =
+    map3 ActionSale
+        (field "user_name" Json.Decode.string)
+        (field "units_on_sale" Json.Decode.int)
+        (field "markup" Json.Decode.float)
 
 
 stakerDecoder : Json.Decode.Decoder Staker
@@ -448,7 +350,8 @@ stakerDecoder =
 view : Model -> Html Msg
 view model =
     div []
-        [ newSeries
+        [ text model.stuff
+        , newSeries
         , allSerieses model
         ]
 
@@ -533,6 +436,7 @@ viewTournament tournament =
     div [ class "tournament" ]
         [ tournamentHeader tournament
         , createActionSale tournament.id
+        , viewActionSales tournament.actionSales
         , br [] []
         ]
 
@@ -569,67 +473,20 @@ createActionSale tournamentId =
         ]
 
 
-viewStakingContract : Tournament -> StakingContract -> Html Msg
-viewStakingContract tournament stakingContract =
-    li []
-        [ text
-            (stakingContract.staker.name
-                ++ " | rate: "
-                ++ toString stakingContract.rate
-                ++ " | percents_sold: "
-                ++ toString stakingContract.percentsSold
-                ++ " | cost: "
-                ++ formatContractCost stakingContract tournament.fee_in_cents
-                ++ formatContractWinnings tournament stakingContract
-            )
-        ]
-
-
-newStakingContract : Tournament -> Html Msg
-newStakingContract tournament =
-    case tournament.result of
-        Nothing ->
-            div []
-                [ text "add a new staker for this tournament below"
-                , newStakerForm tournament
-                ]
-
-        Just _ ->
-            div [] []
-
-
-newStakerForm : Tournament -> Html Msg
-newStakerForm tournament =
+viewActionSales : List ActionSale -> Html Msg
+viewActionSales sales =
     div []
-        [ Html.form
-            [ onSubmit (CreateNewStakingContract tournament.id) ]
-            [ label []
-                [ text "Staker id"
-                , input
-                    [ name "staker-id"
-                    , onInput <| SetFormData (SettStakingContract StakerId)
-                    ]
-                    []
-                ]
-            , label []
-                [ text "percents sold"
-                , input
-                    [ name "percents-sold"
-                    , onInput <| SetFormData (SettStakingContract PercentsSold)
-                    ]
-                    []
-                ]
-            , label []
-                [ text "rate"
-                , input
-                    [ name "rate"
-                    , onInput <| SetFormData (SettStakingContract Rate)
-                    ]
-                    []
-                ]
-            , button [] [ text "submit" ]
-            ]
-        ]
+        ([ actionSalesHeader ] ++ List.map viewActionSale sales)
+
+
+actionSalesHeader : Html Msg
+actionSalesHeader =
+    text "vvvvv available action to buy vvvvv"
+
+
+viewActionSale : ActionSale -> Html Msg
+viewActionSale sale =
+    div [] [ text (sale.user_name ++ " is selling at " ++ (toString sale.markup) ++ "% markup") ]
 
 
 viewTournamentResult : Tournament -> Html Msg
@@ -653,25 +510,6 @@ viewTournamentResult tournament =
                     , button [] [ text "submit" ]
                     ]
                 ]
-
-
-formatContractCost : StakingContract -> Int -> String
-formatContractCost stakingContract tournamentFee =
-    (toFloat tournamentFee / 100)
-        * stakingContract.percentsSold
-        * stakingContract.rate
-        |> ceiling
-        |> formatMoney
-
-
-formatContractWinnings : Tournament -> StakingContract -> String
-formatContractWinnings tournament stakingContract =
-    case tournament.result of
-        Just prize ->
-            " | winnings: " ++ formatMoney (floor ((toFloat prize / 100) * stakingContract.percentsSold))
-
-        Nothing ->
-            ""
 
 
 formatMoney : Int -> String
@@ -724,19 +562,14 @@ lastNDigits n fullNumber =
             toString (nDigits)
 
 
-createTournament : Model -> Maybe AuthenticatedUser -> SeriesId -> Cmd Msg
+createTournament : Model -> AuthenticatedUser -> SeriesId -> Cmd Msg
 createTournament model user seriesId =
-    case user of
-        Just user ->
-            Http.send UpdateTournamentSeriesesShow <|
-                authenticatedRequest
-                    "/api"
-                    user.token
-                    (newTournamentRequestBody model.formData.tournament.name model.formData.tournament.feeInCents seriesId)
-                    (graphQlDecoder "createTournament" (Json.Decode.list tournamentSeriesDecoder))
-
-        Nothing ->
-            Cmd.none
+    Http.send UpdateTournamentSeriesesShow <|
+        authenticatedRequest
+            "/api"
+            user.token
+            (newTournamentRequestBody model.formData.tournament.name model.formData.tournament.feeInCents seriesId)
+            (graphQlDecoder "createTournament" (Json.Decode.list tournamentSeriesDecoder))
 
 
 newTournamentRequestBody : String -> Int -> SeriesId -> Body
@@ -752,7 +585,7 @@ newTournamentRequestBody name feeInCents seriesId =
                         ++ ", tournamentSeriesId: \""
                         ++ seriesId
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result } }"
                         ++ "}"
                     )
               )
@@ -760,19 +593,14 @@ newTournamentRequestBody name feeInCents seriesId =
         )
 
 
-createTournamentSeries : Model -> Maybe AuthenticatedUser -> Cmd Msg
+createTournamentSeries : Model -> AuthenticatedUser -> Cmd Msg
 createTournamentSeries model user =
-    case user of
-        Just user ->
-            Http.send UpdateTournamentSeriesesShow <|
-                authenticatedRequest
-                    "/api"
-                    user.token
-                    (newTournamentSeriesRequestBody model.formData.tournamentSeries.city model.formData.tournamentSeries.name)
-                    (graphQlDecoder "createTournamentSeries" (Json.Decode.list tournamentSeriesDecoder))
-
-        Nothing ->
-            Cmd.none
+    Http.send UpdateTournamentSeriesesShow <|
+        authenticatedRequest
+            "/api"
+            user.token
+            (newTournamentSeriesRequestBody model.formData.tournamentSeries.city model.formData.tournamentSeries.name)
+            (graphQlDecoder "createTournamentSeries" (Json.Decode.list tournamentSeriesDecoder))
 
 
 newTournamentSeriesRequestBody : String -> String -> Body
@@ -786,7 +614,7 @@ newTournamentSeriesRequestBody city name =
                         ++ "\", name: \""
                         ++ name
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result, stakingContracts { percentsSold, staker { name }, rate }} }"
+                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result } }"
                         ++ "}"
                     )
               )
@@ -916,64 +744,6 @@ handleFormInput model formSpecifics userInput =
 
                 newFormData =
                     { existingFormData | tournamentSeries = newTournamentSeriesData }
-            in
-                ( { model | formData = newFormData }, Cmd.none )
-
-        SettStakingContract PercentsSold ->
-            case (String.toFloat userInput) of
-                Ok sold ->
-                    let
-                        existingStakingContractData =
-                            model.formData.stakingContract
-
-                        newStakingContractData =
-                            { existingStakingContractData | percentsSold = sold }
-
-                        existingFormData =
-                            model.formData
-
-                        newFormData =
-                            { existingFormData | stakingContract = newStakingContractData }
-                    in
-                        ( { model | formData = newFormData }, Cmd.none )
-
-                Err message ->
-                    ( { model | stuff = message }, Cmd.none )
-
-        SettStakingContract Rate ->
-            case (String.toFloat userInput) of
-                Ok rate ->
-                    let
-                        existingStakingContractData =
-                            model.formData.stakingContract
-
-                        newStakingContractData =
-                            { existingStakingContractData | rate = rate }
-
-                        existingFormData =
-                            model.formData
-
-                        newFormData =
-                            { existingFormData | stakingContract = newStakingContractData }
-                    in
-                        ( { model | formData = newFormData }, Cmd.none )
-
-                Err message ->
-                    ( { model | stuff = message }, Cmd.none )
-
-        SettStakingContract StakerId ->
-            let
-                existingStakingContractData =
-                    model.formData.stakingContract
-
-                newStakingContractData =
-                    { existingStakingContractData | stakerId = userInput }
-
-                existingFormData =
-                    model.formData
-
-                newFormData =
-                    { existingFormData | stakingContract = newStakingContractData }
             in
                 ( { model | formData = newFormData }, Cmd.none )
 

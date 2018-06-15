@@ -1,4 +1,4 @@
-defmodule Chips.UserControllerTest do
+defmodule ChipsWeb.UserControllerTest do
   use ChipsWeb.ConnCase
 
   @test_user %{email: "asdf@b.c", password: "pss", user_name: "Gigi"}

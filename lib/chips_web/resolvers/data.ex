@@ -20,6 +20,11 @@ defmodule ChipsWeb.Resolvers.Data do
      |> Enum.map(fn {user, balance} -> %{user: user, balance: balance} end)}
   end
 
+  def create_action_sale(_parent, args, %{context: %{user: user}}) do
+    create_action_sale(args, user)
+    {:ok, list_tournament_serieses()}
+  end
+
   def create_result(_parent, args, _resolution) do
     create_result(args)
     {:ok, list_tournament_serieses() |> add_result_to_tournaments}

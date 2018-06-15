@@ -32,8 +32,15 @@ defmodule ChipsWeb.Schema.Types do
     field :result, :integer
     field :starts, :naive_datetime
 
+    field :action_sales, list_of(:action_sales)
     field :staking_contracts, list_of(:staking_contract)
     field :users, list_of(:user)
+  end
+
+  object :action_sales do
+    field :user_name, :string
+    field :units_on_sale, :integer
+    field :markup, :float
   end
 
   object :user do

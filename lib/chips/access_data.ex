@@ -1,12 +1,12 @@
 defmodule Chips.AccessData do
   import Ecto.Query
-  alias Chips.{Repo, Result, StakingContract, Tournament, TournamentSeries, User}
+  alias Chips.{ActionSale, Repo, Result, StakingContract, Tournament, TournamentSeries, User}
 
   # read
   ######
   def list_tournament_serieses do
     Repo.all(TournamentSeries)
-    |> Repo.preload(tournaments: [:results, staking_contracts: [:staker]])
+    |> Repo.preload(tournaments: [:results, :action_sales, staking_contracts: [:staker]])
   end
 
   def list_tournaments do
@@ -57,6 +57,12 @@ defmodule Chips.AccessData do
 
   # write
   #######
+
+  def create_action_sale(args, user) do
+    ActionSale.changeset(%Chips.ActionSale{}, Map.put(args, :user_name, user.user_name))
+    |> Chips.Repo.insert()
+  end
+
   def create_result(args) do
     tournament = Repo.get(Tournament, args.tournament_id)
     player = Repo.get(User, args.player_id)

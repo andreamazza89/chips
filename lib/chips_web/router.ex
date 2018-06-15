@@ -23,6 +23,7 @@ defmodule ChipsWeb.Router do
     plug(Guardian.Plug.VerifyHeader, realm: "Token")
     plug(Guardian.Plug.LoadResource)
     plug(Guardian.Plug.EnsureAuthenticated)
+    plug(ChipsWeb.AddUserToAbsintheContext)
   end
 
   scope "/" do
@@ -39,8 +40,7 @@ defmodule ChipsWeb.Router do
 
     pipe_through(:authenticate)
 
-    forward("/graphiql", Absinthe.Plug.GraphiQL, schema: ChipsWeb.Schema)
-
     forward("/", Absinthe.Plug, schema: ChipsWeb.Schema)
+    forward("/graphiql", Absinthe.Plug.GraphiQL, schema: ChipsWeb.Schema)
   end
 end

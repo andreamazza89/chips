@@ -11,17 +11,14 @@ type Route
     | GoToNewPage
 
 
-resolve : Route -> Bool -> Page
-resolve route userIsAuthenticated =
-    if userIsAuthenticated then
-        case route of
-            GoToOldPage ->
-                MarketPlace Market.initialModel
+resolve : Route -> Page
+resolve route =
+    case route of
+        GoToOldPage ->
+            MarketPlace Market.initialModel
 
-            GoToNewPage ->
-                Authentication Auth.initialModel
-    else
-        Authentication Auth.initialModel
+        GoToNewPage ->
+            Authentication Auth.initialModel
 
 
 locationToRoute : Location -> Route
