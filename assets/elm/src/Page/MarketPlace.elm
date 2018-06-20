@@ -11,10 +11,12 @@ import User exposing (AuthenticatedUser)
 
 
 type alias Model =
-    { actionDollars : Int
+    { actionUnitsToSell : Int
     , actionMarkup : Float
+    , actionResult : Int
     , formData : FormData
     , stuff : String
+    , actionUnitsToBuy : Int
     , tournamentSerieses : List TournamentSeries
     }
 
@@ -49,15 +51,22 @@ type alias TournamentSeriesData =
     }
 
 
+type alias SaleId =
+    String
+
+
 type Msg
     = CreateActionSale String
-    | CreateNewResult TournamentId PlayerId
+    | CreateActionSaleResult String
     | CreateNewTournament SeriesId
     | CreateNewTournamentSeries
     | CreateNewUser
+    | PurchaseAction SaleId
     | SetFormData Specifics String
     | SetActionDollars String
     | SetActionMarkup String
+    | SetActionResult String
+    | SetActionUnitsToBuy String
     | UpdateTournamentSeriesesShow (Result Http.Error (List TournamentSeries))
     | UpdateUsersShown (Result Http.Error (List User))
 
@@ -93,9 +102,18 @@ type TournamentSeriesFormData
 
 
 type alias ActionSale =
-    { user_name : String
-    , units_on_sale : Int
+    { actionPurchases : List ActionPurchase
+    , id : String
     , markup : Float
+    , result : Maybe Int
+    , units_on_sale : Int
+    , user_name : String
+    }
+
+
+type alias ActionPurchase =
+    { unitsBought : Int
+    , userName : String
     }
 
 
@@ -125,7 +143,6 @@ type alias Tournament =
     { id : TournamentId
     , fee_in_cents : Int
     , name : String
-    , result : Maybe Int
     , actionSales : List ActionSale
     }
 
@@ -140,8 +157,10 @@ type alias TournamentId =
 
 initialModel : Model
 initialModel =
-    { actionDollars = 0
+    { actionUnitsToSell = 0
     , actionMarkup = 0
+    , actionResult = 0
+    , actionUnitsToBuy = 0
     , formData = initialFormData
     , stuff = "errors go here"
     , tournamentSerieses = []
@@ -173,7 +192,7 @@ tournamentSeriesesRequestBody =
                         ++ "city,"
                         ++ "id,"
                         ++ "name,"
-                        ++ " tournaments { feeInCents, name, id, result, actionSales { markup, units_on_sale, user_name } } } }"
+                        ++ " tournaments { feeInCents, name, id, actionSales { id, markup, result, units_on_sale, user_name, actionPurchases { userName, unitsBought } } } } }"
                     )
               )
             ]
@@ -195,8 +214,8 @@ update user ( model, msg ) =
         CreateActionSale tournamentId ->
             ( ( model, createActionSaleRequest model user tournamentId ), NoOp )
 
-        CreateNewResult tournamentId playerId ->
-            ( ( model, createResult model user tournamentId playerId ), NoOp )
+        CreateActionSaleResult actionSaleId ->
+            ( ( model, createActionSaleResult model.actionResult user actionSaleId ), NoOp )
 
         CreateNewTournament seriesId ->
             ( ( model, createTournament model user seriesId ), NoOp )
@@ -204,10 +223,13 @@ update user ( model, msg ) =
         CreateNewTournamentSeries ->
             ( ( model, createTournamentSeries model user ), NoOp )
 
+        PurchaseAction actionSaleId ->
+            ( ( model, createActionPurchase actionSaleId model user ), NoOp )
+
         SetActionDollars input ->
             case String.toInt input of
                 Ok dollars ->
-                    ( ( { model | actionDollars = dollars }, Cmd.none ), NoOp )
+                    ( ( { model | actionUnitsToSell = dollars }, Cmd.none ), NoOp )
 
                 Err msg ->
                     ( ( { model | stuff = msg }, Cmd.none ), NoOp )
@@ -216,6 +238,22 @@ update user ( model, msg ) =
             case String.toFloat input of
                 Ok markup ->
                     ( ( { model | actionMarkup = markup }, Cmd.none ), NoOp )
+
+                Err msg ->
+                    ( ( { model | stuff = msg }, Cmd.none ), NoOp )
+
+        SetActionResult input ->
+            case String.toInt input of
+                Ok prize ->
+                    ( ( { model | actionResult = prize }, Cmd.none ), NoOp )
+
+                Err msg ->
+                    ( ( { model | stuff = msg }, Cmd.none ), NoOp )
+
+        SetActionUnitsToBuy input ->
+            case String.toInt input of
+                Ok units ->
+                    ( ( { model | actionUnitsToBuy = units }, Cmd.none ), NoOp )
 
                 Err msg ->
                     ( ( { model | stuff = msg }, Cmd.none ), NoOp )
@@ -231,13 +269,42 @@ update user ( model, msg ) =
             ( ( model, Cmd.none ), NoOp )
 
 
+createActionPurchase : SaleId -> Model -> AuthenticatedUser -> Cmd Msg
+createActionPurchase actionSaleId model user =
+    Http.send UpdateTournamentSeriesesShow <|
+        authenticatedRequest
+            "/api"
+            user.token
+            (createActionPurchaseRequestBody actionSaleId model.actionUnitsToBuy)
+            (graphQlDecoder "createActionPurchase" (Json.Decode.list tournamentSeriesDecoder))
+
+
+createActionPurchaseRequestBody : SaleId -> Int -> Body
+createActionPurchaseRequestBody actionSaleId unitsToBuy =
+    Http.jsonBody
+        (Json.Encode.object
+            [ ( "query"
+              , Json.Encode.string
+                    ("mutation { createActionPurchase(actionSaleId: \""
+                        ++ actionSaleId
+                        ++ "\", unitsBought: "
+                        ++ toString unitsToBuy
+                        ++ ")"
+                        ++ "{ id, name, city, tournaments { feeInCents, name, id, actionSales { id, markup, result, units_on_sale, user_name, actionPurchases { userName, unitsBought } } } }"
+                        ++ "}"
+                    )
+              )
+            ]
+        )
+
+
 createActionSaleRequest : Model -> AuthenticatedUser -> String -> Cmd Msg
 createActionSaleRequest model user tournamentId =
     Http.send UpdateTournamentSeriesesShow <|
         authenticatedRequest
             "/api"
             user.token
-            (createActionSaleRequestBody tournamentId model.actionDollars model.actionMarkup)
+            (createActionSaleRequestBody tournamentId model.actionUnitsToSell model.actionMarkup)
             (graphQlDecoder "createActionSale" (Json.Decode.list tournamentSeriesDecoder))
 
 
@@ -254,7 +321,7 @@ createActionSaleRequestBody tournamentId dollars markup =
                         ++ ", markup: "
                         ++ toString markup
                         ++ ")"
-                        ++ "{ id, name, city, tournaments { feeInCents, name, id, result, actionSales { markup, units_on_sale, user_name } } }"
+                        ++ "{ id, name, city, tournaments { feeInCents, name, id, actionSales { id, markup, result, units_on_sale, user_name, actionPurchases { userName, unitsBought } } } }"
                         ++ "}"
                     )
               )
@@ -262,31 +329,28 @@ createActionSaleRequestBody tournamentId dollars markup =
         )
 
 
-createResult : Model -> AuthenticatedUser -> TournamentId -> PlayerId -> Cmd Msg
-createResult model user tournamentId playerId =
+createActionSaleResult : Int -> AuthenticatedUser -> String -> Cmd Msg
+createActionSaleResult actionResult user actionSaleId =
     Http.send UpdateTournamentSeriesesShow <|
         authenticatedRequest
             "/api"
             user.token
-            (newResultRequestBody model.formData.result.prize tournamentId playerId)
-            (graphQlDecoder "createResult" (Json.Decode.list tournamentSeriesDecoder))
+            (actionSaleResultRequestBody actionResult actionSaleId)
+            (graphQlDecoder "createActionSaleResult" (Json.Decode.list tournamentSeriesDecoder))
 
 
-newResultRequestBody : Int -> TournamentId -> PlayerId -> Body
-newResultRequestBody prize tournamentId playerId =
+actionSaleResultRequestBody : Int -> String -> Body
+actionSaleResultRequestBody actionSaleResult actionSaleId =
     Http.jsonBody
         (Json.Encode.object
             [ ( "query"
               , Json.Encode.string
-                    ("mutation { createResult(prize: "
-                        ++ toString (prize)
-                        ++ ", tournamentId: \""
-                        ++ tournamentId
-                        ++ "\""
-                        ++ ", playerId: \""
-                        ++ playerId
+                    ("mutation { createActionSaleResult(actionSaleResult: "
+                        ++ toString (actionSaleResult)
+                        ++ ", actionSaleId: \""
+                        ++ actionSaleId
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result } }"
+                        ++ "{ id, name, city, tournaments { feeInCents, name, id, actionSales { id, markup, result, units_on_sale, user_name, actionPurchases { userName, unitsBought } } } }"
                         ++ "}"
                     )
               )
@@ -325,20 +389,29 @@ tournamentSeriesDecoder =
 
 tournamentDecoder : Json.Decode.Decoder Tournament
 tournamentDecoder =
-    map5 Tournament
+    map4 Tournament
         (field "id" Json.Decode.string)
         (field "feeInCents" Json.Decode.int)
         (field "name" Json.Decode.string)
-        (field "result" (maybe Json.Decode.int))
         (field "actionSales" (Json.Decode.list actionSaleDecoder))
 
 
 actionSaleDecoder : Json.Decode.Decoder ActionSale
 actionSaleDecoder =
-    map3 ActionSale
-        (field "user_name" Json.Decode.string)
-        (field "units_on_sale" Json.Decode.int)
+    map6 ActionSale
+        (field "actionPurchases" (Json.Decode.list actionPurchaseDecoder))
+        (field "id" Json.Decode.string)
         (field "markup" Json.Decode.float)
+        (field "result" (nullable Json.Decode.int))
+        (field "units_on_sale" Json.Decode.int)
+        (field "user_name" Json.Decode.string)
+
+
+actionPurchaseDecoder : Json.Decode.Decoder ActionPurchase
+actionPurchaseDecoder =
+    map2 ActionPurchase
+        (field "unitsBought" Json.Decode.int)
+        (field "userName" Json.Decode.string)
 
 
 stakerDecoder : Json.Decode.Decoder Staker
@@ -453,63 +526,75 @@ createActionSale tournamentId =
         , Html.form
             [ onSubmit (CreateActionSale tournamentId) ]
             [ label []
-                [ text "Dollars"
+                [ text "How much? (in cents)"
                 , input
-                    [ name "dollars"
+                    [ name "cents"
                     , onInput <| SetActionDollars
                     ]
                     []
                 ]
             , label []
-                [ text "Markup"
+                [ text "At what markup?"
                 , input
                     [ name "markup"
                     , onInput <| SetActionMarkup
                     ]
                     []
                 ]
-            , button [] [ text "submit" ]
+            , button [] [ text "sell action" ]
             ]
         ]
 
 
 viewActionSales : List ActionSale -> Html Msg
 viewActionSales sales =
-    div []
-        ([ actionSalesHeader ] ++ List.map viewActionSale sales)
-
-
-actionSalesHeader : Html Msg
-actionSalesHeader =
-    text "vvvvv available action to buy vvvvv"
+    div [] (List.map viewActionSale sales)
 
 
 viewActionSale : ActionSale -> Html Msg
 viewActionSale sale =
-    div [] [ text (sale.user_name ++ " is selling at " ++ (toString sale.markup) ++ "% markup") ]
-
-
-viewTournamentResult : Tournament -> Html Msg
-viewTournamentResult tournament =
-    case tournament.result of
-        Just prize ->
-            h4 [] [ text ("you won " ++ formatMoney prize) ]
-
-        Nothing ->
-            div []
-                [ Html.form
-                    [ onSubmit (CreateNewResult tournament.id "1") ]
-                    [ label []
-                        [ text "prize"
-                        , input
-                            [ name "prize"
-                            , onInput <| SetFormData (SettResult Prize)
-                            ]
-                            []
-                        ]
-                    , button [] [ text "submit" ]
+    div []
+        [ div [] [ text "--------------------" ]
+        , text (sale.user_name ++ " is selling " ++ (toString sale.units_on_sale) ++ " at " ++ (toString sale.markup) ++ "% markup")
+        , Html.form
+            [ onSubmit (PurchaseAction sale.id) ]
+            [ label []
+                [ text "buy action (cents): "
+                , input
+                    [ name "action"
+                    , onInput <| SetActionUnitsToBuy
                     ]
+                    []
                 ]
+            ]
+        , Html.form
+            [ onSubmit (CreateActionSaleResult sale.id) ]
+            [ label []
+                [ text "publish result (cents): "
+                , input
+                    [ name "publish-result"
+                    , onInput <| SetActionResult
+                    ]
+                    []
+                ]
+            ]
+        , viewPurchases sale.actionPurchases
+        , div [] [ text "--------------------" ]
+        ]
+
+
+viewPurchases : List ActionPurchase -> Html Msg
+viewPurchases purchases =
+    div [] (List.map viewPurchase purchases)
+
+
+viewPurchase : ActionPurchase -> Html Msg
+viewPurchase purchase =
+    div []
+        [ text purchase.userName
+        , text " bought "
+        , text (formatMoney purchase.unitsBought)
+        ]
 
 
 formatMoney : Int -> String
@@ -585,7 +670,7 @@ newTournamentRequestBody name feeInCents seriesId =
                         ++ ", tournamentSeriesId: \""
                         ++ seriesId
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result } }"
+                        ++ "{ id, name, city, tournaments { feeInCents, name, id, actionSales { id, markup, result, units_on_sale, user_name, actionPurchases { userName, unitsBought } } } }"
                         ++ "}"
                     )
               )
@@ -614,7 +699,7 @@ newTournamentSeriesRequestBody city name =
                         ++ "\", name: \""
                         ++ name
                         ++ "\")"
-                        ++ "{ id, name, city, tournaments {id, feeInCents, name, result } }"
+                        ++ "{ id, name, city, tournaments { feeInCents, name, id, actionSales { id, markup, result, units_on_sale, user_name, actionPurchases { userName, unitsBought } } } }"
                         ++ "}"
                     )
               )

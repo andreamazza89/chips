@@ -1,12 +1,22 @@
 defmodule Chips.AccessData do
   import Ecto.Query
-  alias Chips.{ActionSale, Repo, Result, StakingContract, Tournament, TournamentSeries, User}
+
+  alias Chips.{
+    ActionPurchase,
+    ActionSale,
+    ActionSaleResult,
+    Repo,
+    StakingContract,
+    Tournament,
+    TournamentSeries,
+    User
+  }
 
   # read
   ######
   def list_tournament_serieses do
     Repo.all(TournamentSeries)
-    |> Repo.preload(tournaments: [:results, :action_sales, staking_contracts: [:staker]])
+    |> Repo.preload(tournaments: [action_sales: [:action_purchases], staking_contracts: [:staker]])
   end
 
   def list_tournaments do
@@ -63,14 +73,16 @@ defmodule Chips.AccessData do
     |> Chips.Repo.insert()
   end
 
-  def create_result(args) do
-    tournament = Repo.get(Tournament, args.tournament_id)
-    player = Repo.get(User, args.player_id)
+  def create_action_sale_result(args, user) do
+    action_sale_query = from(s in ActionSale, where: s.id == ^args.action_sale_id)
+    sale = Repo.one(action_sale_query)
+    ActionSale.add_result(sale, args)
+    |> Chips.Repo.update()
+  end
 
-    Result.changeset(%Result{}, args)
-    |> Ecto.Changeset.put_assoc(:tournament, tournament)
-    |> Ecto.Changeset.put_assoc(:player, player)
-    |> Repo.insert()
+  def create_action_purchase(args, user) do
+    ActionPurchase.changeset(%Chips.ActionPurchase{}, Map.put(args, :user_name, user.user_name))
+    |> Chips.Repo.insert()
   end
 
   def create_tournament_series(args) do

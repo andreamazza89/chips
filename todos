@@ -1,0 +1,11 @@
+- cannot purchase your own action
+- cannot publish an action result unless you own the action sale
+
+
+would be nice
+- some kind of nice dsl for testing graphql req/resp
+- use a graphql library for elm + clean up requests
+
+
+
+remove saleresult (just add it to the sale)
