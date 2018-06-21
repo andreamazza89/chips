@@ -556,30 +556,49 @@ viewActionSale sale =
     div []
         [ div [] [ text "--------------------" ]
         , text (sale.user_name ++ " is selling " ++ (toString sale.units_on_sale) ++ " at " ++ (toString sale.markup) ++ "% markup")
-        , Html.form
-            [ onSubmit (PurchaseAction sale.id) ]
-            [ label []
-                [ text "buy action (cents): "
-                , input
-                    [ name "action"
-                    , onInput <| SetActionUnitsToBuy
-                    ]
-                    []
-                ]
-            ]
-        , Html.form
-            [ onSubmit (CreateActionSaleResult sale.id) ]
-            [ label []
-                [ text "publish result (cents): "
-                , input
-                    [ name "publish-result"
-                    , onInput <| SetActionResult
-                    ]
-                    []
-                ]
-            ]
+        , actionForms sale
         , viewPurchases sale.actionPurchases
         , div [] [ text "--------------------" ]
+        ]
+
+
+actionForms : ActionSale -> Html Msg
+actionForms sale =
+    case sale.result of
+        Nothing ->
+            div [] [ buyActionForm sale.id, publishResultForm sale.id ]
+
+        Just result ->
+            div [] [ text ("sale is over; the prize was: " ++ (formatMoney result)) ]
+
+
+buyActionForm : SaleId -> Html Msg
+buyActionForm saleId =
+    Html.form
+        [ onSubmit (PurchaseAction saleId) ]
+        [ label []
+            [ text "buy action (cents): "
+            , input
+                [ name "action"
+                , onInput <| SetActionUnitsToBuy
+                ]
+                []
+            ]
+        ]
+
+
+publishResultForm : SaleId -> Html Msg
+publishResultForm saleId =
+    Html.form
+        [ onSubmit (CreateActionSaleResult saleId) ]
+        [ label []
+            [ text "publish result (cents): "
+            , input
+                [ name "publish-result"
+                , onInput <| SetActionResult
+                ]
+                []
+            ]
         ]
 
 
